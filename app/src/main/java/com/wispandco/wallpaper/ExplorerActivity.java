@@ -19,6 +19,7 @@ public final class ExplorerActivity extends Activity {
     private final String[] names={"Dock","Garden","Pond","Forest","Inside cottage"};
     private SceneView scene;
     private TextView caption;
+    private boolean animating=true;
     @Override public void onCreate(Bundle b){
         super.onCreate(b);
         FrameLayout root=new FrameLayout(this);
@@ -56,12 +57,14 @@ public final class ExplorerActivity extends Activity {
         @Override protected void onDraw(Canvas canvas){
             renderer.draw(canvas,getWidth(),getHeight(),WispState.zone(ExplorerActivity.this),
                 WispState.weather(ExplorerActivity.this),WispState.spirit(ExplorerActivity.this),System.currentTimeMillis());
-            postInvalidateDelayed(85);
+            if(animating && getVisibility()==VISIBLE)postInvalidateDelayed(33);
         }
         @Override public boolean onTouchEvent(MotionEvent event){
             if(event.getAction()==MotionEvent.ACTION_UP){WispState.pet(ExplorerActivity.this);update();return true;}
             return true;
         }
     }
-    @Override protected void onResume(){super.onResume();WeatherClient.refresh(this);update();}
+    @Override protected void onResume(){super.onResume();animating=true;WeatherClient.refresh(this);update();}
+    @Override protected void onPause(){animating=false;super.onPause();}
+    @Override protected void onDestroy(){if(scene!=null)scene.renderer.release();super.onDestroy();}
 }
