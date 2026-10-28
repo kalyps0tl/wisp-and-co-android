@@ -29,13 +29,22 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.12'
-      # Keep one personal debug signature across builds without publishing a private key.
-      # This is development-only signing, NOT suitable for Play Store releases.
+      # Keep one test signing identity across builds, without checking the key into Git.
       - name: Restore development debug signing key
         uses: actions/cache@v4
         with:
-          path: ~/.android/debug.keystore
-          key: wisp-co-android-debug-key-v1
+          path: app/signing/dev-debug.keystore
+          key: wisp-co-android-debug-key-v2
+      - name: Create development signing key when missing
+        shell: bash
+        run: |
+          mkdir -p app/signing
+          if [ ! -f app/signing/dev-debug.keystore ]; then
+            keytool -genkeypair -v -keystore app/signing/dev-debug.keystore \
+              -alias androiddebugkey -storepass android -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Wisp Development,O=Wisp and Co,C=CA"
+          fi
       - name: Compile debug APK
         run: gradle --no-daemon :app:assembleDebug
       - name: Upload installable debug package
