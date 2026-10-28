@@ -1,0 +1,15 @@
+# Generated files
+.gradle/
+build/
+**/build/
+local.properties
+.idea/
+*.iml
+*.apk
+*.aab
+*.keystore
+*.jks
+.env
+.env.*
+secrets.properties
+.DS_Store
