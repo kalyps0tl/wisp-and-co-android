@@ -69,7 +69,7 @@ public final class MainActivity extends Activity {
         button("Preview different weather",()->new AlertDialog.Builder(this).setTitle("Preview weather")
             .setItems(new String[]{"Clear","Cloudy","Rain","Snow","Fog","Storm"},(d,i)->{
                 String[] options={"clear","cloud","rain","snow","fog","storm"};
-                p.edit().putBoolean("liveWeather",false).putString("weather",options[i]).apply();render();
+                p.edit().putBoolean("liveWeather",false).putString("weather",options[i]).remove("tempC").remove("weatherUpdated").apply();render();
             }).show());
         button("Use real local weather (optional)",()->{
             p.edit().putBoolean("liveWeather",true).putLong("weatherUpdated",0).apply();
