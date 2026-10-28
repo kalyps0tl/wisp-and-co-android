@@ -4,9 +4,10 @@ import android.service.wallpaper.WallpaperService;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
@@ -20,7 +21,10 @@ public final class WispWallpaper extends WallpaperService {
         private boolean visible=false;
         private final Runnable tick=this::render;
         private long lastRefresh=0;
-        WispEngine(){setTouchEventsEnabled(true);}
+        WispEngine(){
+            setTouchEventsEnabled(true);
+            labels.setTypeface(Typeface.create("sans-serif-medium",Typeface.NORMAL));
+        }
         @Override public void onVisibilityChanged(boolean isVisible) {
             visible=isVisible;handler.removeCallbacks(tick);if(visible)render();
         }
@@ -30,12 +34,15 @@ public final class WispWallpaper extends WallpaperService {
         @Override public void onSurfaceDestroyed(SurfaceHolder holder) {
             super.onSurfaceDestroyed(holder);visible=false;handler.removeCallbacks(tick);
         }
-        @Override public void onDestroy() {visible=false;handler.removeCallbacks(tick);super.onDestroy();}
+        @Override public void onDestroy() {
+            visible=false;handler.removeCallbacks(tick);renderer.release();super.onDestroy();
+        }
         @Override public void onTouchEvent(MotionEvent e) {
             if(e.getAction()==MotionEvent.ACTION_UP) {WispState.pet(WispWallpaper.this);render();}
             super.onTouchEvent(e);
         }
         private void render(){
+            final long frameStart=SystemClock.uptimeMillis();
             handler.removeCallbacks(tick);
             if(!visible)return;
             long now=System.currentTimeMillis();
@@ -55,14 +62,14 @@ public final class WispWallpaper extends WallpaperService {
                 String label=wx.toUpperCase(java.util.Locale.US);
                 if(p.contains("tempC")) label+=" · "+p.getInt("tempC",0)+"°C";
                 labels.setColor(0xff5f5269);labels.setTextSize(Math.max(22,w*.037f));
-                labels.setTypeface(android.graphics.Typeface.create("sans-serif-medium",0));
                 c.drawText(label,w*.066f,h*.105f,labels);
                 if(p.getLong("weatherUpdated",0)>0 && now-p.getLong("weatherUpdated",0)>90*60*1000L){
                     labels.setTextSize(Math.max(14,w*.019f));c.drawText("Last known weather",w*.066f,h*.126f,labels);
                 }
             }catch(Exception ignored){ /* Surface can disappear during home-screen switches. */ }
             finally {if(c!=null)try{surface.unlockCanvasAndPost(c);}catch(Exception ignored){}}
-            if(visible)handler.postDelayed(tick,85);
+            // Aim for 30 FPS while visible; never busy-loop if a frame runs long.
+            if(visible)handler.postDelayed(tick,Math.max(1,33-(SystemClock.uptimeMillis()-frameStart)));
         }
     }
 }
