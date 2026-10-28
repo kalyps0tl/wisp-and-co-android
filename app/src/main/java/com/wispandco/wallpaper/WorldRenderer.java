@@ -203,8 +203,8 @@ public final class WorldRenderer {
         }
     }
     private void wisp(Canvas c,String shape,String zone){
-        float y="cottage".equals(zone)?738:("pond".equals(zone)?695:("garden".equals(zone)?724:("forest".equals(zone)?716:705));
-        float x="dock".equals(zone)?294:("garden".equals(zone)?177:("pond".equals(zone)?161:211);
+        float y="cottage".equals(zone)?738:("pond".equals(zone)?695:("garden".equals(zone)?724:("forest".equals(zone)?716:705)));
+        float x="dock".equals(zone)?294:("garden".equals(zone)?177:("pond".equals(zone)?161:211));
         float bob=(float)Math.sin(time*2.2)*5;
         c.save();c.translate(x,y+bob);
         oval(c,0x447b6c89,-32,42,66,12);
