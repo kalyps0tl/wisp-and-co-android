@@ -1,13 +1,13 @@
 package com.wispandco.wallpaper;
 
 import android.graphics.Canvas;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
 import java.util.Calendar;
-import java.util.Random;
 
 /** Independent native scene renderer. All drawing uses a fixed 400x900 design canvas. */
 public final class WorldRenderer {
@@ -15,6 +15,46 @@ public final class WorldRenderer {
     private final RectF r=new RectF();
     private float time;
     private String weather;
+    // Scene geometry is expensive at full phone resolution. Cache the still
+    // 600x1350 storybook scenery and animate only Wisp, wildlife and weather.
+    private Bitmap sceneCache;
+    private String cacheZone = "";
+    private String cacheWeather = "";
+    private boolean cacheNight;
+    private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+
+    public void release() {
+        if (sceneCache != null) {
+            sceneCache.recycle();
+            sceneCache = null;
+        }
+    }
+    private void cacheScene(String zone, String wx, boolean night) {
+        if (sceneCache != null && !sceneCache.isRecycled()
+                && cacheZone.equals(zone) && cacheWeather.equals(wx) && cacheNight == night) return;
+        if (sceneCache == null || sceneCache.isRecycled()) {
+            sceneCache = Bitmap.createBitmap(600, 1350, Bitmap.Config.ARGB_8888);
+        }
+        Canvas backing = new Canvas(sceneCache);
+        backing.save();
+        backing.scale(1.5f, 1.5f);
+        this.time = 0f; // Background stays still; animation is a separate layer.
+        this.weather = wx;
+        sky(backing, night);
+        if ("cottage".equals(zone)) {
+            interior(backing);
+        } else {
+            mountains(backing);
+            if ("forest".equals(zone)) forest(backing);
+            else if ("garden".equals(zone)) garden(backing);
+            else if ("pond".equals(zone)) pond(backing);
+            else dock(backing);
+        }
+        backing.restore();
+        cacheZone = zone;
+        cacheWeather = wx;
+        cacheNight = night;
+    }
     private void fill(Canvas c,int color,float x,float y,float w,float h){p.setColor(color);p.setStyle(Paint.Style.FILL);c.drawRect(x,y,x+w,y+h,p);}
     private void oval(Canvas c,int color,float x,float y,float w,float h){p.setColor(color);p.setShader(null);c.drawOval(x,y,x+w,y+h,p);}
     private void round(Canvas c,int color,float x,float y,float w,float h,float radius){
@@ -30,22 +70,27 @@ public final class WorldRenderer {
     private void circle(Canvas c,int color,float x,float y,float rad){p.setColor(color);p.setShader(null);c.drawCircle(x,y,rad,p);}
     public void draw(Canvas c,int w,int h,String zone,String weather,String spirit,long timestamp){
         if(w<=0||h<=0)return;
-        c.save();c.scale(w/400f,h/900f);
-        time=(timestamp%1000000L)/1000f;this.weather=weather;
-        boolean night=Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>=19 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<6;
-        sky(c,night);
-        if("cottage".equals(zone))interior(c);
-        else {
-            mountains(c);
-            if("forest".equals(zone)) forest(c);
-            else if("garden".equals(zone))garden(c);
-            else if("pond".equals(zone))pond(c);
-            else dock(c);
-        }
+        boolean night=Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>=19
+                || Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<6;
+        cacheScene(zone, weather, night);
+        c.save();
+        c.scale(w/400f, h/900f);
+        c.drawBitmap(sceneCache, null, new RectF(0, 0, 400, 900), bitmapPaint);
+        time=(timestamp%1000000L)/1000f;
+        this.weather=weather;
+        if ("pond".equals(zone) || "dock".equals(zone)) movingWater(c);
         wildlife(c,zone);
         wisp(c,spirit,zone);
         atmospheric(c,weather);
         c.restore();
+    }
+    private void movingWater(Canvas c) {
+        // A few ripples give the pond movement without redrawing the scenery.
+        for (int i=0; i<5; i++) {
+            float x = 48+i*71+(float)Math.sin(time*0.7+i)*7;
+            float y = 789+(i%3)*22;
+            line(c, 0x66e8f5f0, 1.2f, x, y, x+23, y);
+        }
     }
     private void sky(Canvas c,boolean night){
         int top=night?0xff403952:0xffd4c3e3,bottom=night?0xff9e89ae:0xffffe1db;
