@@ -6,7 +6,7 @@ android {
         applicationId = "com.wispandco.wallpaper"
         minSdk = 31
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1-github-foundation"
+        versionCode = 2
+        versionName = "0.2-performance-preview"
     }
 }
