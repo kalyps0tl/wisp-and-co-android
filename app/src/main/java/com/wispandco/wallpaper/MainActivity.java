@@ -22,8 +22,16 @@ public final class MainActivity extends Activity {
     private LinearLayout body;
     private final int INK=0xff51445e;
     private final String[] spirits={"Woodland ears","Little antlers","Moth wings","Leaf sprout"};
-    private final String[] temperaments={"Wayfinder — curious","Dreamweaver — creative","Hearthling — gentle"};
-    @Override public void onCreate(Bundle b){super.onCreate(b);render();}
+    @Override public void onCreate(Bundle b){
+        super.onCreate(b);
+        render();
+        // The meeting is an invitation, not a permission wall: skipping it
+        // leaves all established identity, preferences and progress unchanged.
+        if(b==null && !WispState.prefs(this).getBoolean("matching_complete",false)
+                   && !WispState.prefs(this).getBoolean("matching_dismissed",false)){
+            body.post(()->startActivity(new Intent(this,MatchingActivity.class)));
+        }
+    }
     private int dp(int v){return (int)(getResources().getDisplayMetrics().density*v+0.5f);}
     private TextView text(String value,int size){
         TextView t=new TextView(this);t.setText(value);t.setTextColor(INK);t.setTextSize(size);
@@ -43,7 +51,11 @@ public final class MainActivity extends Activity {
         scroll.addView(body);setContentView(scroll);
         text("✦ Wisp & Co.",29);
         text("A little world that keeps living when you are away.",15);
-        text("Your companion: "+WispState.name(this)+"  ·  "+WispState.profile(this)+"  ·  "+WispState.spirit(this),16);
+        boolean met=prefsMet();
+        text(met?"Your companion: "+WispState.name(this)+" · "+WispState.profile(this)+" · "+WispState.spirit(this):
+            "A little spirit is ready to meet you.",16);
+        button(met?"Relive the matching ceremony · Meet another Wisp":"MEET YOUR WISP · The matching ceremony ✦",
+            ()->startActivity(new Intent(this,MatchingActivity.class)));
         SharedPreferences p=WispState.prefs(this);
         String degree=p.contains("tempC")?("  ·  "+p.getInt("tempC",0)+"°C"):"";
         text("Weather: "+WispState.weather(this)+degree+"  ·  "+(p.getBoolean("liveWeather",false)?"live (opt-in)":"manual preview"),15);
@@ -67,7 +79,6 @@ public final class MainActivity extends Activity {
             startActivity(i);
         });
         button("Pet Wisp",()->{WispState.pet(this);render();});
-        button("Meet your Wisp · matching quiz",this::quiz);
         button("Customize spirit form",()->new AlertDialog.Builder(this).setTitle("Which little spirit?")
             .setItems(spirits,(d,i)->{WispState.set(this,"spirit",WispState.SPIRITS[i]);render();}).show());
         button("Customize Wisp's magical markings",()->new AlertDialog.Builder(this)
@@ -128,30 +139,8 @@ public final class MainActivity extends Activity {
         text("Seasonal activities now have visible keepsakes in the cottage. Tap Explore → Inside cottage → Explore nearby to participate. Hanukkah is optional and its dates aren't guessed from the calendar.",12);
         text("This is still a development preview: walking is tap-to-move within each scene, with scene navigation rather than a continuous roaming map. Hand-painted art is a future milestone.",12);
     }
-    private void quiz(){
-        final int[] score={0,0,0};
-        String[] prompts={"Something unusual appears by the pond. You'd rather...",
-            "Which quiet afternoon sounds most magical?","A friend's creation goes wrong. You'd rather..."};
-        String[][] answers={{"Follow the mystery","Try building with it","Sit and observe"},
-            {"Explore a new path","Make something cozy","Share tea by the fire"},
-            {"Encourage another attempt","Invent a solution","Offer comfort"}};
-        quizStep(0,score,prompts,answers);
-    }
-    private void quizStep(int step,int[] score,String[] prompts,String[][] answers){
-        if(step==3){
-            int best=0;for(int i=1;i<3;i++)if(score[i]>score[best])best=i;
-            final int winner=best;
-            new AlertDialog.Builder(this).setTitle("A Wisp approaches...")
-                .setMessage("You seem well matched with a "+temperaments[winner]+". This is only a suggestion; you may choose any personality.")
-                .setPositiveButton("Meet this Wisp",(d,w)->{String[] ids={"wonder","maker","hearth"};WispState.set(this,"profile",ids[winner]);render();})
-                .setNeutralButton("Choose another",(d,w)->new AlertDialog.Builder(this).setTitle("Choose a temperament")
-                    .setItems(temperaments,(dialog,choice)->{String[] ids={"wonder","maker","hearth"};WispState.set(this,"profile",ids[choice]);render();}).show())
-                .show();return;
-        }
-        new AlertDialog.Builder(this).setTitle("Meeting Wisp · "+(step+1)+"/3")
-            .setMessage(prompts[step])
-            .setItems(answers[step],(d,i)->{score[i]++;quizStep(step+1,score,prompts,answers);})
-            .setNegativeButton("Maybe later",null).show();
+    private boolean prefsMet(){
+        return WispState.prefs(this).getBoolean("matching_complete",false);
     }
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] grants){
         super.onRequestPermissionsResult(request,permissions,grants);
