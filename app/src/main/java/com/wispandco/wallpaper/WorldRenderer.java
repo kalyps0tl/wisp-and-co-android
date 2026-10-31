@@ -320,10 +320,10 @@ public final class WorldRenderer {
         }
         if("cottage".equals(zone)){
             // Fenn, the moth who lives beside the bookshelf.
-            float y=371+(float)Math.sin(time*1.3)*8;
-            oval(c,0x99ddc7e5,145,y-12,18,26);
-            oval(c,0x99f5dfea,162,y-12,18,26);
-            oval(c,0xffb998b6,160,y-7,7,22);
+            float mothY=371+(float)Math.sin(time*1.3)*8;
+            oval(c,0x99ddc7e5,145,mothY-12,18,26);
+            oval(c,0x99f5dfea,162,mothY-12,18,26);
+            oval(c,0xffb998b6,160,mothY-7,7,22);
 
             for(int i=0;i<5;i++){
                 float x=306+i*9,y=310+(float)Math.sin(time*1.2+i)*6;
