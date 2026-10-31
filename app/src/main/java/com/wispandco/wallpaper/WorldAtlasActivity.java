@@ -28,8 +28,8 @@ public final class WorldAtlasActivity extends Activity {
         "Bramble visits the blossoms when the sun is warm",
         "Fenn watches over the books by the hearth"
     };
-    private static final int[] X={91,290,184,302,139};
-    private static final int[] Y={133,167,285,390,487};
+    private static final int[] MAP_X={91,290,184,302,139};
+    private static final int[] MAP_Y={133,167,285,390,487};
     private int dp(int n){return (int)(getResources().getDisplayMetrics().density*n+0.5f);}
     @Override public void onCreate(Bundle b){super.onCreate(b);build();}
     private void build(){
@@ -116,12 +116,12 @@ public final class WorldAtlasActivity extends Activity {
                     paint.setColor(0xffb9a28f);paint.setStyle(Paint.Style.STROKE);
                     paint.setStrokeWidth(6);paint.setPathEffect(
                         new android.graphics.DashPathEffect(new float[]{5,10},0));
-                    c.drawLine(X[a],Y[a],X[b],Y[b],paint);
+                    c.drawLine(MAP_X[a],MAP_Y[a],MAP_X[b],MAP_Y[b],paint);
                     paint.setPathEffect(null);paint.setStyle(Paint.Style.FILL);
                 }
             }
             for(int i=0;i<ZONES.length;i++){
-                float x=X[i],y=Y[i];
+                float x=MAP_X[i],y=MAP_Y[i];
                 circle(c,0x66fff3da,x,y,32);
                 circle(c,0xfff5e7da,x,y,24);
                 circle(c,0xffa892a8,x,y,20);
@@ -165,7 +165,7 @@ public final class WorldAtlasActivity extends Activity {
                 float y=e.getY()/Math.max(1,getHeight())*570;
                 int best=-1;float dist=1800;
                 for(int i=0;i<ZONES.length;i++){
-                    float dx=x-X[i],dy=y-Y[i],d=dx*dx+dy*dy;
+                    float dx=x-MAP_X[i],dy=y-MAP_Y[i],d=dx*dx+dy*dy;
                     if(d<dist){best=i;dist=d;}
                 }
                 if(best>=0)visit(best);
