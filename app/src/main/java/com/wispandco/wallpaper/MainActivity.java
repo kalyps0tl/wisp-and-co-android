@@ -94,6 +94,12 @@ public final class MainActivity extends Activity {
             .setPositiveButton("Go and visit",(d,i)->
                 startActivity(new Intent(this,ExplorerActivity.class)))
             .setNegativeButton("Close",null).show());
+        button("Read today's little letter from Wisp ✉",()->{
+            String letter=WispDaybook.read(this);
+            new AlertDialog.Builder(this).setTitle("A letter from "+WispState.name(this))
+                .setMessage(letter)
+                .setPositiveButton("Keep this one ♥",null).show();
+        });
         button("Read our discovery journal",()->new AlertDialog.Builder(this)
             .setTitle("The little book of days")
             .setMessage(WorldJournal.recent(this))
