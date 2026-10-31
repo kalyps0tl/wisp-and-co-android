@@ -114,6 +114,12 @@ public final class ContextEngine implements SensorEventListener {
         PowerManager power=(PowerManager)c.getSystemService(Context.POWER_SERVICE);
         return power!=null && power.isPowerSaveMode();
     }
+    public static boolean gentleEvenings(Context c){
+        return WispState.prefs(c).getBoolean("quiet_evenings",true);
+    }
+    public static void setGentleEvenings(Context c,boolean enabled){
+        WispState.prefs(c).edit().putBoolean("quiet_evenings",enabled).apply();
+    }
     public static boolean reducedMotion(Context c) {
         return WispState.prefs(c).getBoolean("reduce_motion",false) || batterySaver(c);
     }
@@ -145,7 +151,8 @@ public final class ContextEngine implements SensorEventListener {
             "Movement: "+movement+" ("+source+")\n"+
             "Step sensor: "+sensing+"\n"+
             "Battery: "+batteryStatus(c)+"\n"+
-            "Gentle animation: "+(reducedMotion(c)?"yes":"no");
+            "Gentle animation: "+(reducedMotion(c)?"yes":"no")+"\n"+
+            "Quiet evening routines: "+(gentleEvenings(c)?"on":"off");
     }
     @Override public void onAccuracyChanged(Sensor sensor,int accuracy) {}
 
