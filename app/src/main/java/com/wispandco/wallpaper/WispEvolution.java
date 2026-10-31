@@ -36,6 +36,7 @@ public final class WispEvolution {
         p.edit().putString("evolution_history",history).putInt("evolution_stage",next)
             .putString("evolution_trait",newTrait)
             .putString("note","Something new is growing on me: "+newTrait+"! You can change me back any time.").apply();
+        WorldJournal.add(c,"Wisp grew into "+STAGES[next]+" with "+newTrait+" markings.");
         return true;
     }
     public static synchronized boolean undo(Context c){
@@ -52,6 +53,7 @@ public final class WispEvolution {
             .putString("evolution_history",last<0?"":history.substring(0,last))
             .putBoolean("evolution_hold",true)
             .putString("note","I can grow in my own time. This shape feels nice too!").apply();
+        WorldJournal.add(c,"You restored Wisp's previous appearance.");
         return true;
     }
     public static void resume(Context c){
@@ -63,6 +65,7 @@ public final class WispEvolution {
         int count=p.getInt("discoveries",0)+1;
         p.edit().putInt("discoveries",count)
             .putString("note","I learned something new at the "+where+". I'll remember our visit!").apply();
+        WorldJournal.add(c,"A new discovery at the "+where+".");
         refresh(c);
     }
 }
