@@ -65,6 +65,14 @@ public final class MainActivity extends Activity {
         button("Meet your Wisp · matching quiz",this::quiz);
         button("Customize spirit form",()->new AlertDialog.Builder(this).setTitle("Which little spirit?")
             .setItems(spirits,(d,i)->{WispState.set(this,"spirit",WispState.SPIRITS[i]);render();}).show());
+        button("Customize Wisp's magical markings",()->new AlertDialog.Builder(this)
+            .setTitle("A little bit of magic")
+            .setItems(new String[]{"Starlight freckles","Mossy green","Flower petals","Frost shimmer","Warm embers"},
+                (dialog,choice)->{
+                    WispState.set(this,"evolution_trait",WispEvolution.TRAITS[choice]);
+                    WorldJournal.add(this,"You helped Wisp choose "+WispEvolution.TRAITS[choice]+" markings.");
+                    render();
+                }).show());
         button("Growth & appearance timeline",()->{
             String[] actions=WispEvolution.held(this)?
                 new String[]{"Restore the previous appearance","Allow Wisp to evolve again","Keep this appearance"}:
