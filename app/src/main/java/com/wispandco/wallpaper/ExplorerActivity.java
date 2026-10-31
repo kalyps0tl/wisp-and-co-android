@@ -132,8 +132,16 @@ public final class ExplorerActivity extends Activity {
             }).setNegativeButton("Let them be",null).show();
     }
     private void showActions(){
+        String[] local=actions[index()];
+        String[] options=new String[local.length+1];
+        options[0]=WispMoments.pending(this)?"Hear Wisp's little question ♥":
+            "Ask what Wisp's thinking ♥";
+        System.arraycopy(local,0,options,1,local.length);
         new AlertDialog.Builder(this).setTitle("What shall we do here?")
-            .setItems(actions[index()],(dialog,choice)->perform(choice)).show();
+            .setItems(options,(dialog,choice)->{
+                if(choice==0)WispConversation.show(this,this::update);
+                else perform(choice-1);
+            }).show();
     }
     private void perform(int choice){
         if("cottage".equals(activeZone)){
