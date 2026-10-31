@@ -202,7 +202,8 @@ public final class ExplorerActivity extends Activity {
                 WispEvolution.trait(ExplorerActivity.this),
                 WorldEvents.selected(ExplorerActivity.this,0)?WorldEvents.progress(ExplorerActivity.this,0):0,
                 WorldEvents.selected(ExplorerActivity.this,1)?WorldEvents.progress(ExplorerActivity.this,1):0,
-                WorldEvents.selected(ExplorerActivity.this,2)?WorldEvents.progress(ExplorerActivity.this,2):0);
+                WorldEvents.selected(ExplorerActivity.this,2)?WorldEvents.progress(ExplorerActivity.this,2):0,
+                WorldVisuals.lighting(ExplorerActivity.this),WorldVisuals.palette(ExplorerActivity.this));
             // Visible path exits, using the same centered aspect-fill transform
             // as the world renderer. Quick area buttons remain available too.
             float scale=Math.max(getWidth()/400f,getHeight()/900f);
