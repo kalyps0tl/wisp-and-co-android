@@ -55,7 +55,11 @@ public final class WispWallpaper extends WallpaperService {
                 if(c==null)return;
                 int w=c.getWidth(),h=c.getHeight();
                 renderer.draw(c,w,h,WispState.zone(WispWallpaper.this),
-                    WispState.weather(WispWallpaper.this),WispState.spirit(WispWallpaper.this),now);
+                    WispState.weather(WispWallpaper.this),WispState.spirit(WispWallpaper.this),now,
+                    WispEvolution.stage(WispWallpaper.this),WispEvolution.trait(WispWallpaper.this),
+                    WorldEvents.selected(WispWallpaper.this,0)?WorldEvents.progress(WispWallpaper.this,0):0,
+                    WorldEvents.selected(WispWallpaper.this,1)?WorldEvents.progress(WispWallpaper.this,1):0,
+                    WorldEvents.selected(WispWallpaper.this,2)?WorldEvents.progress(WispWallpaper.this,2):0);
                 // Weather on the wallpaper, not only inside settings.
                 SharedPreferences p=WispState.prefs(WispWallpaper.this);
                 String wx=WispState.weather(WispWallpaper.this);
