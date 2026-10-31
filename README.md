@@ -1,45 +1,46 @@
 # Wisp & Co. 🌿
 
-**Phone-first Android live wallpaper and interactive companion.** A gentle, autonomous woodland spirit lives in a cozy world that changes with the weather and with the things it learns.
+**Native Android living wallpaper and companion world**, intended for eventual distribution on Google Play. Wisp is an autonomous spirit living in a gentle, explorable storybook setting whose habits, memories and appearance can evolve. The phone version works independently; compatible Wear OS watches may eventually extend the same world.
 
-## What is now in this repository
+**Wisp & Co. is Android-wide, NOT exclusive to any Pixel model or Pixel Watch.**
 
-This is the **first native Android development foundation**, not the finished app or an installation-tested release.
+## Current development prototype
 
-- Native `WallpaperService` with an animated Canvas landscape.
-- Five visitable scenes: dock, garden, pond, forest and the **cottage interior**.
-- Procedural bees, dragonflies, fireflies, ripples and a small animated Wisp (temporary character art).
-- Visible weather label on the wallpaper and rain/snow/fog/storm render modes.
-- Opt-in, approximate-location current weather from Open-Meteo, plus manual weather preview.
-- Wisp's on-device activity and project progression, and petting interactions.
-- A three-question matching quiz and meaningful woodland, antlered, moth and sprout forms.
-- Optional celebration preferences saved in settings (the full activities are **not implemented yet**).
-- GitHub Actions workflow that attempts to compile a **debug APK** automatically when you push to `main`.
+The v0.3 explorer/wallpaper foundation includes:
 
-## Download the first build, if the workflow passes
+- Native Android `WallpaperService` + an interactive companion app.
+- Five separate scenes: dock, garden, pond, forest and furnished cottage interior.
+- Temporary Canvas art, animated Wisp, pond ripples, bees and dragonflies.
+- Tap-to-move character movement, simple discovery choices and a persistent journal.
+- Four distinct spirit silhouettes (woodland, antlered, moth, sprout) and magical markings; reversible appearance evolution based on in-world experiences.
+- Local project progression and some opt-in seasonal interactions: pumpkin carving, tree decorating, Hanukkah-themed candle display (an optional depiction, not religious observance).
+- Manual weather previews and opt-in approximate-location weather fetched from Open-Meteo.
+- Automatic development debug APK compilation via GitHub Actions.
 
-1. Open the **Actions** tab for this repository.
-2. Open the latest **Build Wisp & Co Android Debug APK** run.
-3. Confirm the result is green. Under **Artifacts**, download **WispAndCo-debug-apk**.
-4. Extract the ZIP on your Pixel 10 Pro and install `app-debug.apk` (Android may ask to allow installs from your browser/files app).
-5. Open **Wisp & Co.**, choose **Explore cottage, pond, garden and forest**, and then select **Set the living wallpaper**.
-6. Preview rain/snow/storm in the app, then optionally grant approximate location permission for live local weather.
+**Not yet implemented:** genuine continuous exploration, high-quality layered painted art, real phone step counts, Activity Recognition transitions, background home/away detection, Health Connect, native smartwatch synchronization, complete seasonal calendars, Play Store production bundle and release signing. These are requirements or ideas, not shipped features.
 
-**Do not install an APK from an unsuccessful run.** Compilation and actual device behaviour have not yet been verified. The current scene changes are separate selectable locations, *not yet a seamless world with collision-aware walking*. The visual art is intentionally a temporary functional renderer; the soft storybook animation and sophisticated autonomy remain priorities.
+## Universal Android direction and privacy
 
-## Long-term vision
+- **Proposed minimum: Android 10 (API 29)**, target/compile **Android 16 (API 36)** to prepare for current Play submission requirements. Older and non-Pixel phones must be actually tested.
+- Wisp must work fully **without** step sensors, GPS access, a smartwatch, Health Connect or Google Play services. Optional connected data can enrich—not gate—the experience.
+- Activity, home status, location/weather, quiet hours and watch integration are each independently consented to. No route history or indiscriminate background tracking.
+- Respect battery saver, reduced motion, Android accessibility, and device/launcher-specific wallpaper behaviour.
+- User controls over sensing, data deletion, manual context, memory export, and reversible evolution.
 
-- A truly explorable cottage interior, lake/pond, garden, forest, and little inhabitants with relationships and schedules.
-- A beautifully restrained, layered storybook visual aesthetic rather than a static painting or floating ball.
-- Wisp independently chooses projects, learns from new discoveries, asks for advice or comfort, remembers shared moments, and continues its life without neglect penalties.
-- Substantial body-form customization, personality-matched beginnings, and **reversible appearance evolution** based on experience.
-- Seasonal and culturally respectful opt-in activities including carving pumpkins, Christmas-tree decorating and Hanukkah traditions.
-- One synchronized Wisp and world on the phone and eventually the Pixel Watch 2.
+See **[ANDROID_PRODUCT_PLAN.md](ANDROID_PRODUCT_PLAN.md)** for the contextual intelligence feature matrix, privacy boundaries, platform compatibility and Play roadmap.
 
-## Privacy
+## Download development APKs
 
-Do not commit personal locations, precise GPS logs, account keys or private data here. Location weather is explicitly opt-in; state is stored on-device. No secrets are required for the weather API.
+Go to [GitHub Actions](https://github.com/kalyps0tl/wisp-and-co-android/actions), open a successful run, and download the `WispAndCo-debug-apk` artifact. Extract the ZIP and install the APK with Android Files.
 
-## Development requirements
+Only download from **successful** runs. These are **debug** builds for testing, not Play Store releases. Updating over old debug versions can fail if the original app used a different signing identity.
 
-Android API 35, Java 17, Android Gradle Plugin 8.9.2, Gradle 8.12 (GitHub workflow), min SDK 31.
+## Play Store readiness checklist
+
+We will eventually need a privately secured release signing identity, a signed **Android App Bundle (AAB)**, Play Console account and identity verification, privacy policy, Play Data safety form, a deliberate permission UX, multiple-device tests, screenshot/store assets and potentially a qualifying closed testing period.
+
+**Not suitable for production yet.** This project currently contains placeholder art and partly simulated world systems; an Android build passing does **not** mean the app has been validated on each device.
+
+## Build
+
+Android Gradle Plugin 8.13.2, Gradle 8.13, Java 17, Android SDK 36. Android 10 / API 29 minimum, pending testing across brands.
