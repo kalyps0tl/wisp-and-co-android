@@ -51,6 +51,11 @@ public final class ExplorerActivity extends Activity {
         top.addView(caption);
         Button action=new Button(this);action.setText("Explore nearby ✦");action.setAllCaps(false);
         top.addView(action);action.setOnClickListener(v->showActions());
+        Button friend=new Button(this);
+        friend.setText("Visit a woodland neighbor  ♥");
+        friend.setAllCaps(false);
+        top.addView(friend);
+        friend.setOnClickListener(v->visitNeighbor());
         root.addView(top,new FrameLayout.LayoutParams(-1,-2,Gravity.TOP));
 
         HorizontalScrollView strip=new HorizontalScrollView(this);
@@ -82,6 +87,29 @@ public final class ExplorerActivity extends Activity {
             ".  Your world: "+ContextEngine.dayPart()+", "+ContextEngine.motion(this)+
             ". Tap the ground to walk, or explore nearby.");
         scene.invalidate();
+    }
+    private void visitNeighbor(){
+        int n=WorldNeighbors.index(activeZone);
+        if(n<0){
+            new AlertDialog.Builder(this).setTitle("Down by the dock")
+                .setMessage("Pip the frog usually lives near the lily pads. Would you like to visit the pond?")
+                .setPositiveButton("Visit pond",(d,i)->{
+                    activeZone="pond";WispState.set(this,"zone","pond");update();visitNeighbor();
+                }).setNegativeButton("Not now",null).show();
+            return;
+        }
+        String name=WorldNeighbors.name(n);
+        new AlertDialog.Builder(this).setTitle(name)
+            .setMessage(WorldNeighbors.schedule(this,n)+"\n\n"+WorldNeighbors.friendship(this,n)+
+                " · "+WorldNeighbors.meetings(this,n)+" visits\n\n"+WorldNeighbors.FAVORITES[n]+
+                "\n\nFriendships grow gently with time, without streaks or penalties.")
+            .setPositiveButton("Say hello",(d,i)->{
+                String story=WorldNeighbors.visit(this,n);
+                new AlertDialog.Builder(this).setTitle("A moment together")
+                    .setMessage(story)
+                    .setPositiveButton("How lovely",null).show();
+                update();
+            }).setNegativeButton("Let them be",null).show();
     }
     private void showActions(){
         new AlertDialog.Builder(this).setTitle("What shall we do here?")
