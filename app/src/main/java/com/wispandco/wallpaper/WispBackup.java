@@ -33,6 +33,7 @@ public final class WispBackup {
         "quiet_evenings",
         "moment_pending","moment_last_offered","moment_last_answer",
         "moment_invites","moment_snoozed",
+        "daybook_date","daybook_letter",
         "affinity_curiosity","affinity_making","affinity_kindness",
         "garden_0_kind","garden_0_planted","garden_1_kind","garden_1_planted",
         "garden_2_kind","garden_2_planted",
