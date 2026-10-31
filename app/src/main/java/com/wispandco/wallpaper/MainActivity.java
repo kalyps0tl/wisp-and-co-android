@@ -82,6 +82,9 @@ public final class MainActivity extends Activity {
             " · "+(ContextEngine.batterySaver(this)?"battery saver active":"normal battery mode"),13);
         button("Context & senses · your controls",()->
             startActivity(new Intent(this,ContextActivity.class)));
+        text("Our garden: "+GardenPatch.overview(this),14);
+        button("Tend our little living garden",()->
+            startActivity(new Intent(this,GardenActivity.class)));
         text("EXPLORE THE LIVING WORLD",18);
         button("Open the illustrated world atlas",()->startActivity(new Intent(this,WorldAtlasActivity.class)));
         button("Explore Wisp's living world",()->startActivity(new Intent(this,ExplorerActivity.class)));
