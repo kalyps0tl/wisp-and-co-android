@@ -73,14 +73,15 @@ public final class WorldNeighbors {
         int b=bond(c,n);
         // A friendship can deepen no more than once every ~4 hours. The player
         // can still visit as often as they please, with no penalties or streaks.
-        if(previous==0||now-previous>=4L*60L*60L*1000L)b=Math.min(12,b+1);
+        boolean fresh=previous==0||now-previous>=4L*60L*60L*1000L;
+        if(fresh)b=Math.min(12,b+1);
         String description=greeting(c,n);
         p.edit().putInt("neighbor_"+n+"_bond",b)
             .putInt("neighbor_"+n+"_seen",seen)
             .putLong("neighbor_"+n+"_last",now)
             .putString("note",description).apply();
         WorldJournal.add(c,"Visited "+NAMES[n]+". "+description);
-        WispEvolution.discover(c,PLACES[n]);
+        if(fresh)WispEvolution.discover(c,PLACES[n]);
         // Evolution may announce itself; restore this shared encounter as the
         // latest immediate conversation.
         p.edit().putString("note",description).apply();
