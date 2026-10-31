@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/wisp_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:padding="14dp"
+    android:background="@drawable/widget_wisp_background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_wisp_foreground"
+            android:contentDescription="@string/widget_wisp_icon_description"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:paddingStart="6dp"
+            android:orientation="vertical">
+            <TextView android:id="@+id/wisp_widget_name"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/app_name" android:textColor="#59465F"
+                android:textSize="18sp" android:fontFamily="serif" android:textStyle="bold"
+                android:maxLines="1" android:ellipsize="end"/>
+            <TextView android:id="@+id/wisp_widget_status"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/widget_status_placeholder" android:textColor="#695F70"
+                android:textSize="11sp" android:maxLines="2"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:id="@+id/wisp_widget_activity"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:gravity="center_vertical"
+        android:paddingTop="4dp" android:paddingBottom="5dp"
+        android:text="@string/widget_activity_placeholder"
+        android:textColor="#554A60" android:textSize="13sp" android:maxLines="3"
+        android:ellipsize="end"/>
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="40dp" android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView android:id="@+id/wisp_widget_explore"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="40dp" android:gravity="center"
+            android:background="@drawable/widget_button_background"
+            android:text="Explore ✦" android:textColor="#4B495C" android:textSize="13sp"/>
+        <Space android:layout_width="8dp" android:layout_height="1dp"/>
+        <TextView android:id="@+id/wisp_widget_talk"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="40dp" android:gravity="center"
+            android:background="@drawable/widget_button_background"
+            android:text="Talk ♥" android:textColor="#4B495C" android:textSize="13sp"/>
+    </LinearLayout>
+</LinearLayout>
