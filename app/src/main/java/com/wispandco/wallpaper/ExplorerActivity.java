@@ -1,6 +1,7 @@
 package com.wispandco.wallpaper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.graphics.Canvas;
@@ -144,6 +145,10 @@ public final class ExplorerActivity extends Activity {
             }).show();
     }
     private void perform(int choice){
+        if("garden".equals(activeZone) && choice==2){
+            startActivity(new Intent(this,GardenActivity.class));
+            return;
+        }
         if("cottage".equals(activeZone)){
             if(choice==0){
                 new AlertDialog.Builder(this).setTitle("Wisp's journal")
@@ -241,7 +246,9 @@ public final class ExplorerActivity extends Activity {
                 }
                 WorldHotspots.Point found=WorldHotspots.find(activeZone,x,y);
                 if(found!=null){
-                    if("cottage".equals(found.kind) && SceneRoutes.connects(activeZone,"cottage")){
+                    if("garden".equals(found.kind)){
+                        startActivity(new Intent(ExplorerActivity.this,GardenActivity.class));
+                    }else if("cottage".equals(found.kind) && SceneRoutes.connects(activeZone,"cottage")){
                         travel("cottage");
                     }else{
                         String message=WorldHotspots.interact(ExplorerActivity.this,found);
