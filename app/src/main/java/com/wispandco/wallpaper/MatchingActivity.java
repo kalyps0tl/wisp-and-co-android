@@ -75,12 +75,16 @@ public final class MatchingActivity extends Activity {
                 System.arraycopy(previous,0,picked,0,picked.length);
                 recalculate();
             }
+            selectedForm=state.getString("quiz_form",selectedForm);
+            FORM_DESIGN_CHOSEN=state.getBoolean("quiz_custom_form",false);
         }
         drawScreen();
     }
     @Override protected void onSaveInstanceState(Bundle out){
         out.putInt("quiz_step",step);
         out.putIntArray("quiz_picks",picked.clone());
+        out.putString("quiz_form",selectedForm);
+        out.putBoolean("quiz_custom_form",FORM_DESIGN_CHOSEN);
         super.onSaveInstanceState(out);
     }
     private int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+0.5f);}
@@ -134,7 +138,7 @@ public final class MatchingActivity extends Activity {
     }
     private void question(){
         int preview=picked[Math.max(0,step-1)];
-        portrait(preview>=0?preview:2);
+        portrait(preview>=0?formIndex(FORMS[preview]):2);
         text("A SMALL CONVERSATION   "+(step+1)+" OF "+QUESTIONS.length,13,true);
         text(QUESTIONS[step],23,true);
         for(int i=0;i<4;i++){
@@ -232,7 +236,7 @@ public final class MatchingActivity extends Activity {
     private final class SpiritPortrait extends View {
         final int silhouette;
         final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        SpiritPortrait(int spirit){super(MatchingActivity.this);silhouette=spirit;setLayerType(View.LAYER_TYPE_SOFTWARE,null);}
+        SpiritPortrait(int spirit){super(MatchingActivity.this);silhouette=spirit;}
         void oval(Canvas c,int color,float l,float t,float r,float b){
             paint.setShader(null);paint.setColor(color);c.drawOval(l,t,r,b,paint);
         }
