@@ -45,6 +45,8 @@ jobs:
               -keyalg RSA -keysize 2048 -validity 10000 \
               -dname "CN=Wisp Development,O=Wisp and Co,C=CA"
           fi
+      - name: Test explorable world paths
+        run: gradle --no-daemon :app:testDebugUnitTest
       - name: Compile debug APK
         run: gradle --no-daemon :app:assembleDebug
       - name: Upload installable debug package
