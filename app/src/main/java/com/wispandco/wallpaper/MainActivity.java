@@ -50,7 +50,12 @@ public final class MainActivity extends Activity {
         text("Currently "+WispState.activity(this)+" at the "+WispState.zone(this)+".",15);
         text("Making: "+WispState.currentProject(this)+" ("+WispState.projectProgress(this)+"/4)  ·  Creations: "+WispState.projects(this),14);
         text("✉ "+WispState.note(this),15);
-        button("Explore cottage, pond, garden and forest",()->startActivity(new Intent(this,ExplorerActivity.class)));
+        text("Growing: "+WispEvolution.description(this)+"  ·  Discoveries: "+WispEvolution.discoveries(this),15);
+        button("Explore Wisp's living world",()->startActivity(new Intent(this,ExplorerActivity.class)));
+        button("Read our discovery journal",()->new AlertDialog.Builder(this)
+            .setTitle("The little book of days")
+            .setMessage(WorldJournal.recent(this))
+            .setPositiveButton("Close",null).show());
         button("Set the living wallpaper",()->{
             Intent i=new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
             i.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,new ComponentName(this,WispWallpaper.class));
@@ -60,6 +65,23 @@ public final class MainActivity extends Activity {
         button("Meet your Wisp · matching quiz",this::quiz);
         button("Customize spirit form",()->new AlertDialog.Builder(this).setTitle("Which little spirit?")
             .setItems(spirits,(d,i)->{WispState.set(this,"spirit",WispState.SPIRITS[i]);render();}).show());
+        button("Growth & appearance timeline",()->{
+            String[] actions=WispEvolution.held(this)?
+                new String[]{"Restore the previous appearance","Allow Wisp to evolve again","Keep this appearance"}:
+                new String[]{"Restore the previous appearance","Pause automatic evolution","Keep growing"};
+            new AlertDialog.Builder(this).setTitle(WispEvolution.description(this))
+                .setItems(actions,(d,which)->{
+                    if(which==0){
+                        if(!WispEvolution.undo(this))
+                            new AlertDialog.Builder(this).setMessage("Wisp has no previous transformation yet.")
+                                .setPositiveButton("Okay",null).show();
+                    }else if(which==1){
+                        if(WispEvolution.held(this))WispEvolution.resume(this);
+                        else WispState.prefs(this).edit().putBoolean("evolution_hold",true).apply();
+                    }
+                    render();
+                }).setNegativeButton("Close",null).show();
+        });
         button("Choose Wisp's name",()->{
             EditText edit=new EditText(this);edit.setSingleLine(true);edit.setText(WispState.name(this));
             new AlertDialog.Builder(this).setTitle("Your companion's name").setView(edit)
@@ -90,7 +112,8 @@ public final class MainActivity extends Activity {
                     String[] keys={"event_pumpkins","event_christmas","event_hanukkah"};
                     p.edit().putBoolean(keys[which],checked).apply();
                 }).setPositiveButton("Done",null).show());
-        text("Foundation build: native scenes and movement. The seasonal choices are saved; full event scenes and detailed evolution are still being developed.",12);
+        text("Seasonal activities now have visible keepsakes in the cottage. Tap Explore → Inside cottage → Explore nearby to participate. Hanukkah is optional and its dates aren't guessed from the calendar.",12);
+        text("This is still a development preview: walking is tap-to-move within each scene, with scene navigation rather than a continuous roaming map. Hand-painted art is a future milestone.",12);
     }
     private void quiz(){
         final int[] score={0,0,0};
