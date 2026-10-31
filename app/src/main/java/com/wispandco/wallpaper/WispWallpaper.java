@@ -72,7 +72,8 @@ public final class WispWallpaper extends WallpaperService {
                     WispEvolution.stage(WispWallpaper.this),WispEvolution.trait(WispWallpaper.this),
                     WorldEvents.selected(WispWallpaper.this,0)?WorldEvents.progress(WispWallpaper.this,0):0,
                     WorldEvents.selected(WispWallpaper.this,1)?WorldEvents.progress(WispWallpaper.this,1):0,
-                    WorldEvents.selected(WispWallpaper.this,2)?WorldEvents.progress(WispWallpaper.this,2):0);
+                    WorldEvents.selected(WispWallpaper.this,2)?WorldEvents.progress(WispWallpaper.this,2):0,
+                    WorldVisuals.lighting(WispWallpaper.this),WorldVisuals.palette(WispWallpaper.this));
                 // Weather on the wallpaper, not only inside settings.
                 SharedPreferences p=WispState.prefs(WispWallpaper.this);
                 String wx=WispState.weather(WispWallpaper.this);
