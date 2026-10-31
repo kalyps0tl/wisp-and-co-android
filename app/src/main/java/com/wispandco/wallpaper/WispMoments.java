@@ -64,6 +64,21 @@ public final class WispMoments {
         int top=affinity(c,best);
         return top==0?"Still discovering its interests":KINDS[best];
     }
+    /** User-initiated check-in: no need to wait for an automatic moment. */
+    public static synchronized void invite(Context c){
+        SharedPreferences p=WispState.prefs(c);
+        if(pending(c)){
+            p.edit().putBoolean("moment_snoozed",false).apply();
+            return;
+        }
+        long next=p.getLong("moment_invites",0L);
+        int index=(int)(next%PROMPTS.length);
+        p.edit().putInt("moment_pending",index)
+            .putLong("moment_invites",next+1)
+            .putLong("moment_last_offered",System.currentTimeMillis()/WispState.SLOT)
+            .putBoolean("moment_snoozed",false)
+            .putString("note",PROMPTS[index][0]).apply();
+    }
     public static synchronized void consider(Context c,long slot,Random random){
         SharedPreferences p=WispState.prefs(c);
         if(pending(c)||p.getBoolean("moment_snoozed",false))return;
