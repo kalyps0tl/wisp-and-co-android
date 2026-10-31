@@ -30,6 +30,7 @@ public final class WispBackup {
         "event_pumpkins","event_christmas","event_hanukkah",
         "pumpkin_progress","tree_progress","hanukkah_progress","seasonal_idle_ticks",
         "sensor_enabled","place_mode","motion_override","reduce_motion",
+        "world_light","world_palette",
         "quiet_evenings",
         "moment_pending","moment_last_offered","moment_last_answer",
         "moment_invites","moment_snoozed",
