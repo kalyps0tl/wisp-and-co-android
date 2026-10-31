@@ -29,8 +29,10 @@ public final class WorldEvents {
         else if(which==1)note=next==7?"The tree sparkles with all our handmade ornaments!":"I hung a decoration on our winter tree.";
         else note="We've prepared the candle display for night "+next+". We can learn about Hanukkah together.";
         // Lighting is an opt-in visual activity, not a substitute for religious observance.
-        p.edit().putInt(STEPS[which],next).putString("note",note).apply();
+        p.edit().putInt(STEPS[which],next).apply();
         WispEvolution.discover(c, "cottage");
+        p.edit().putString("note",note).apply();
+        WorldJournal.add(c,"Together we worked on "+LABELS[which].toLowerCase()+".");
     }
     public static void seasonalAutonomy(Context c){
         SharedPreferences p=WispState.prefs(c);
