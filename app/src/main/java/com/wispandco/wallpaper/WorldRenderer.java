@@ -26,6 +26,7 @@ public final class WorldRenderer {
     }
     private String cacheZone = "";
     private String cacheWeather = "";
+    private String cacheSeason = "";
     private boolean cacheNight;
     private final Paint bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
 
@@ -36,8 +37,9 @@ public final class WorldRenderer {
         }
     }
     private void cacheScene(String zone, String wx, boolean night) {
+        String season=season();
         if (sceneCache != null && !sceneCache.isRecycled()
-                && cacheZone.equals(zone) && cacheWeather.equals(wx) && cacheNight == night) return;
+                && cacheZone.equals(zone) && cacheWeather.equals(wx) && cacheNight == night && cacheSeason.equals(season)) return;
         if (sceneCache == null || sceneCache.isRecycled()) {
             sceneCache = Bitmap.createBitmap(600, 1350, Bitmap.Config.ARGB_8888);
         }
@@ -57,10 +59,12 @@ public final class WorldRenderer {
             else dock(backing);
         }
         scenicDetails(backing,zone);
+        seasonalDetails(backing,zone,season);
         backing.restore();
         cacheZone = zone;
         cacheWeather = wx;
         cacheNight = night;
+        cacheSeason=season;
     }
     private void fill(Canvas c,int color,float x,float y,float w,float h){p.setColor(color);p.setStyle(Paint.Style.FILL);c.drawRect(x,y,x+w,y+h,p);}
     private void oval(Canvas c,int color,float x,float y,float w,float h){p.setColor(color);p.setShader(null);c.drawOval(x,y,x+w,y+h,p);}
@@ -97,6 +101,49 @@ public final class WorldRenderer {
         foreground(c,zone);
         atmospheric(c,weather);
         c.restore();
+    }
+    private static String season(){
+        int month=Calendar.getInstance().get(Calendar.MONTH);
+        if(month==11||month<=1)return "winter";
+        if(month<=4)return "spring";
+        if(month<=7)return "summer";
+        return "autumn";
+    }
+    private void seasonalDetails(Canvas c,String zone,String season){
+        if("cottage".equals(zone)){
+            if("winter".equals(season)){
+                for(int i=0;i<7;i++)circle(c,0x99eff4f5,198+(i*17)%85,231+(i*31)%92,2.5f);
+            }else if("autumn".equals(season)){
+                oval(c,0xffbb8d7b,215,317,25,6);
+                oval(c,0xffd3a881,249,324,15,5);
+            }
+            return;
+        }
+        if("winter".equals(season)){
+            // Snowflakes along the ground remain separate from active snowfall.
+            for(int i=0;i<21;i++){
+                float x=(i*71)%425-15;
+                float y=600+(i%5)*53;
+                oval(c,0xbbf7f4ef,x,y,28+i%3*8,9);
+            }
+        }else if("autumn".equals(season)){
+            int[] leaves={0xffd8a27b,0xffbd8f85,0xffe1bb89,0xffab857c};
+            for(int i=0;i<31;i++){
+                float x=(i*93)%408,y=590+(i*37)%270;
+                oval(c,leaves[i%4],x,y,8+i%3*3,4+i%2*3);
+            }
+        }else if("spring".equals(season)){
+            for(int i=0;i<28;i++){
+                float x=(i*79)%410,y=593+(i*53)%240;
+                circle(c,0xfff1d7e1,x,y,4);
+                circle(c,0xffffefd2,x+1,y,1.5f);
+            }
+        }else{
+            for(int i=0;i<24;i++){
+                float x=(i*67)%408,y=628+(i*43)%240;
+                line(c,0xaa739b81,2,x,y,x-2,y-9);
+            }
+        }
     }
     /** Low-cost details baked into the cached background, not every frame. */
     private void scenicDetails(Canvas c,String zone){
