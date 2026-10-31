@@ -17,7 +17,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Install Android API 35 using runner SDK
+      - name: Install Android API 36 using runner SDK
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit)"
