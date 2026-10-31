@@ -49,8 +49,8 @@
             android:layout_height="40dp" android:gravity="center"
             android:background="@drawable/widget_button_background"
             android:text="Explore ✦" android:textColor="#4B495C" android:textSize="13sp"/>
-        <Space android:layout_width="8dp" android:layout_height="1dp"/>
         <TextView android:id="@+id/wisp_widget_talk"
+            android:layout_marginStart="8dp"
             android:layout_width="0dp" android:layout_weight="1"
             android:layout_height="40dp" android:gravity="center"
             android:background="@drawable/widget_button_background"
