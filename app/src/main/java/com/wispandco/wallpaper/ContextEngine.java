@@ -26,6 +26,7 @@ public final class ContextEngine implements SensorEventListener {
     private final Context app;
     private final SensorManager sensors;
     private final Sensor stepSensor;
+    private final boolean usingStepDetector;
     private int visibleOwners = 0;
     private boolean listening = false;
     private float lastRawSteps = -1f;
@@ -34,7 +35,10 @@ public final class ContextEngine implements SensorEventListener {
     private ContextEngine(Context c) {
         app=c.getApplicationContext();
         sensors=(SensorManager)app.getSystemService(Context.SENSOR_SERVICE);
-        stepSensor=sensors==null?null:sensors.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor counter=sensors==null?null:sensors.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor detector=sensors==null?null:sensors.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        stepSensor=counter!=null?counter:detector;
+        usingStepDetector=counter==null && detector!=null;
     }
     private static synchronized ContextEngine engine(Context c) {
         if(instance==null)instance=new ContextEngine(c);
@@ -145,7 +149,7 @@ public final class ContextEngine implements SensorEventListener {
         if(!enabled(c))sensing="Off";
         else if(!hasStepSensor(c))sensing="No step-counter hardware";
         else if(!hasPermission(c))sensing="Permission needed";
-        else sensing="On while Wisp is visible";
+        else sensing=engine(c).usingStepDetector?"Step detector, visible only":"Step counter, visible only";
         return "Time: "+dayPart()+" (device clock, not actual sunrise)\n"+
             "Where: "+place(c)+" (set manually)\n"+
             "Movement: "+movement+" ("+source+")\n"+
@@ -157,7 +161,13 @@ public final class ContextEngine implements SensorEventListener {
     @Override public void onAccuracyChanged(Sensor sensor,int accuracy) {}
 
     @Override public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType()!=Sensor.TYPE_STEP_COUNTER || event.values.length<1)return;
+        if(stepSensor==null || event.sensor.getType()!=stepSensor.getType()
+            || event.values.length<1)return;
+        if(usingStepDetector){
+            if(event.values[0]>0) WispState.prefs(app).edit()
+                .putLong("last_walk",System.currentTimeMillis()).apply();
+            return;
+        }
         float raw=event.values[0];
         long now=System.currentTimeMillis();
         if(lastRawSteps>=0 && raw>lastRawSteps && previousSampleAt>0 &&
