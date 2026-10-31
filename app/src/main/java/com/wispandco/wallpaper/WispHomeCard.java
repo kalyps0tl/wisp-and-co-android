@@ -41,8 +41,7 @@ public final class WispHomeCard extends View {
         super.onDraw(c);
         int w=getWidth(),h=getHeight();if(w<=0||h<=0)return;
         c.save();c.scale(w/400f,h/260f);
-        boolean night=Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<7||
-            Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>=19;
+        boolean night=WorldVisuals.isNight(WorldVisuals.lighting(getContext()));
         String wx=WispState.weather(getContext());
         int top=night?0xff5a5274:0xffc3c9d9,bottom=night?0xffa58ca3:0xffffe8d4;
         if("storm".equals(wx)){top=0xff7f7b90;bottom=0xffcac5d4;}
@@ -117,6 +116,11 @@ public final class WispHomeCard extends View {
             float x=i*58-7;
             line(c,0xff638b7d,2,x,261,x+6,237-i%3*4);
             oval(c,i%2==0?0xffdcb3c8:0xffe9c8a6,x+1,235-i%3*4,11,7);
+        }
+        int overlay=WorldVisuals.overlay(WorldVisuals.palette(getContext()));
+        if((overlay>>>24)!=0){
+            p.setShader(null);p.setColor(overlay);p.setStyle(Paint.Style.FILL);
+            c.drawRoundRect(0,0,400,260,22,22,p);
         }
         c.restore();
     }
