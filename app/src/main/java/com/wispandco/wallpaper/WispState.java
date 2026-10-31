@@ -41,6 +41,11 @@ public final class WispState {
         String wx=weather(c),type=profile(c),zone=p.getString("zone","dock"),activity=p.getString("activity","reading");
         String note=p.getString("note","");
         int newCreations=0;
+        // Context is a *nudge*, never a command. Most of Wisp's choices remain
+        // based on its own temperament, interests, weather and projects.
+        String motion=ContextEngine.motion(c);
+        String place=ContextEngine.place(c);
+        String day=ContextEngine.dayPart();
         for (int i=0;i<delta;i++) {
             Random r=new Random((last+i+1)*104729L + type.hashCode() * 31L);
             int n=r.nextInt(100);
@@ -58,6 +63,21 @@ public final class WispState {
             else if ("forest".equals(zone)) activity=n<60?"finding mushroom paths":"gathering leaves";
             else if ("cottage".equals(zone)) activity=n<60?"making something by the hearth":"reading";
             else activity=n<60?"watching the pond":"looking for shiny stones";
+            if(!"storm".equals(wx) && n<38) {
+                if("walking".equals(motion)) {
+                    zone=r.nextBoolean()?"forest":"garden";
+                    activity=r.nextBoolean()?"following a winding trail":"collecting woodland keepsakes";
+                } else if ("home".equals(place)) {
+                    zone=r.nextBoolean()?"cottage":"garden";
+                    activity=r.nextBoolean()?"making the cottage cozy":"looking after tiny seedlings";
+                } else if ("away".equals(place)) {
+                    zone=r.nextBoolean()?"pond":"forest";
+                    activity=r.nextBoolean()?"exploring somewhere new":"sketching a strange little path";
+                } else if (("evening".equals(day)||"night".equals(day)) && n<22) {
+                    zone="cottage";
+                    activity="watching the lanterns and thinking about tomorrow";
+                }
+            }
             if (r.nextInt(4)==0) {
                 progress++;
                 if (progress>=4) {
@@ -74,6 +94,24 @@ public final class WispState {
         if(newCreations>0)WorldJournal.add(c,"Wisp finished "+newCreations+" small creation(s) while following its own ideas.");
         WispEvolution.refresh(c);
         WorldEvents.seasonalAutonomy(c);
+    }
+    /** A lightweight, immediate response when the user explicitly changes context. */
+    public static void reactToContext(Context c) {
+        String motion=ContextEngine.motion(c);
+        String place=ContextEngine.place(c);
+        String msg;
+        if("walking".equals(motion))
+            msg="Your walk gave me an idea for a woodland adventure of my own!";
+        else if("resting".equals(motion))
+            msg="I think I'll curl up with a book and my little projects.";
+        else if("home".equals(place))
+            msg="I wonder what would make the cottage extra cozy today.";
+        else if("away".equals(place))
+            msg="You are off exploring? I might discover something nearby, too.";
+        else if("night".equals(ContextEngine.dayPart()))
+            msg="The night is quiet. I might visit the fireflies.";
+        else msg="There's so much to discover, even on an ordinary day.";
+        prefs(c).edit().putString("note",msg).apply();
     }
     public static String currentProject(Context c) { return PROJECTS[projects(c)%PROJECTS.length]; }
 }
