@@ -54,6 +54,7 @@ public final class WispState {
             else if ("rain".equals(wx)) zone = r.nextInt(3)==0?"pond":(r.nextBoolean()?"cottage":"dock");
             else if ("wonder".equals(type)) zone=ZONES[r.nextInt(5)];
             else if ("maker".equals(type)) zone=r.nextInt(3)==0?"garden":"cottage";
+            else if ("dreamer".equals(type)) zone=r.nextInt(3)==0?"forest":(r.nextBoolean()?"pond":"cottage");
             else zone=ZONES[r.nextInt(5)];
             if ("storm".equals(wx)) activity="building a cozy little nest";
             else if ("snow".equals(wx)) activity="studying snowflakes";
@@ -63,6 +64,18 @@ public final class WispState {
             else if ("forest".equals(zone)) activity=n<60?"finding mushroom paths":"gathering leaves";
             else if ("cottage".equals(zone)) activity=n<60?"making something by the hearth":"reading";
             else activity=n<60?"watching the pond":"looking for shiny stones";
+            // Personality changes preferred activities, not just the label.
+            if("dreamer".equals(type) && !"storm".equals(wx) && n<57){
+                activity="night".equals(day)||"evening".equals(day)
+                    ?"listening for fireflies and moonlit stories"
+                    :"sketching a story about the little forest";
+            } else if("maker".equals(type) && n<36){
+                activity="gathering materials for a tiny invention";
+            } else if("hearth".equals(type) && n<36){
+                activity="bringing gifts to woodland neighbors";
+            } else if("wonder".equals(type) && n<36){
+                activity="following a mysterious little trail";
+            }
             if(!"storm".equals(wx) && n<38) {
                 if("walking".equals(motion)) {
                     zone=r.nextBoolean()?"forest":"garden";
