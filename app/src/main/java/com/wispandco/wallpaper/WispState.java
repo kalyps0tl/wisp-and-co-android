@@ -91,6 +91,11 @@ public final class WispState {
                     activity="watching the lanterns and thinking about tomorrow";
                 }
             }
+            if(ContextEngine.gentleEvenings(c) && ("evening".equals(day)||"night".equals(day))
+                    && n%3==0 && !"walking".equals(motion)) {
+                zone="cottage";
+                activity=r.nextBoolean()?"reading beside the hearth":"making a quiet little keepsake";
+            }
             if (r.nextInt(4)==0) {
                 progress++;
                 if (progress>=4) {
