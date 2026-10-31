@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Wisp &amp; Co.</string>
     <string name="wallpaper_description">An evolving little world that responds to the weather.</string>
+    <string name="widget_description">Your little woodland spirit on your home screen. Tap to explore or talk.</string>
+    <string name="widget_wisp_icon_description">Tiny purple woodland spirit illustration</string>
+    <string name="widget_status_placeholder">A peaceful day in the woodland</string>
+    <string name="widget_activity_placeholder">Wisp is exploring the little world...</string>
 </resources>
