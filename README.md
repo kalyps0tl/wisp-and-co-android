@@ -20,6 +20,7 @@ The v0.3 explorer/wallpaper foundation includes:
 - **v0.6 exploration and memories**: tap glowing object hotspots; follow explicitly connected paths between scenes; meet the frog, bee, owl and moth and build ongoing friendships; interact with the cottage hearth, bookshelf, window and workbench; longer-lasting private journals and gentle quiet evening routines.
 - **v0.6 visual development**: more layered flowers, reeds, foliage, cottage furnishings and character foreground plants; simple visual changes across spring, summer, autumn and winter; a custom Wisp launcher icon; proportional scene rendering on varied phone aspect ratios. The art is still procedurally drawn, not yet the planned hand-painted layered art.
 - **v0.6 privacy and reliability**: user-owned JSON save export/import and permanent local-data erase controls, plus automated navigation tests in CI.
+- **Next development snapshot (post-v0.6)**: a personalized illustrated companion home scene, native hand-drawn five-location atlas, occasional voluntary Wisp conversations and lasting interests influenced by the player's advice, animated blinking and nighttime lantern, broader step sensor fallback, and saved conversation memories in private backups. These are native additions, not the completed final art system.
 - Context gently nudges autonomous activity choices; a user can disable physical-activity sensing without losing gameplay. Battery saver automatically reduces wallpaper and explorer animation frequency.
 - Automatic development debug APK compilation via GitHub Actions.
 
