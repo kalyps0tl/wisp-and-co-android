@@ -34,6 +34,8 @@ public final class WispBackup {
         "moment_pending","moment_last_offered","moment_last_answer",
         "moment_invites","moment_snoozed",
         "affinity_curiosity","affinity_making","affinity_kindness",
+        "garden_0_kind","garden_0_planted","garden_1_kind","garden_1_planted",
+        "garden_2_kind","garden_2_planted",
         "neighbor_0_bond","neighbor_1_bond","neighbor_2_bond",
         "neighbor_3_bond","neighbor_0_seen","neighbor_1_seen","neighbor_2_seen",
         "neighbor_3_seen","neighbor_0_last","neighbor_1_last","neighbor_2_last",
