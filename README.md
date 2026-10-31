@@ -15,9 +15,11 @@ The v0.3 explorer/wallpaper foundation includes:
 - Four distinct spirit silhouettes (woodland, antlered, moth, sprout) and magical markings; reversible appearance evolution based on in-world experiences.
 - Local project progression and some opt-in seasonal interactions: pumpkin carving, tree decorating, Hanukkah-themed candle display (an optional depiction, not religious observance).
 - Manual weather previews and opt-in approximate-location weather fetched from Open-Meteo.
+- **v0.4 context dashboard** showing local time-of-day, battery/charging and battery saver, manual home/away, manual walking/resting, and opt-in Android step-counter hints while the app or live wallpaper is visible.
+- Context gently nudges autonomous activity choices; a user can disable physical-activity sensing without losing gameplay. Battery saver automatically reduces wallpaper and explorer animation frequency.
 - Automatic development debug APK compilation via GitHub Actions.
 
-**Not yet implemented:** genuine continuous exploration, high-quality layered painted art, real phone step counts, Activity Recognition transitions, background home/away detection, Health Connect, native smartwatch synchronization, complete seasonal calendars, Play Store production bundle and release signing. These are requirements or ideas, not shipped features.
+**Not yet implemented:** genuine continuous exploration, high-quality layered painted art, a persistent all-day step total, Google Play Services Activity Recognition transitions, automatic home/away detection, Health Connect, native smartwatch synchronization, complete seasonal calendars, Play Store production bundle and release signing. **v0.4 does not track continuously in the background**: the Android hardware step-counter listener runs only when Wisp is visible, and its output is limited to a recent walking hint rather than a saved step history. These are requirements or ideas, not shipped features.
 
 ## Universal Android direction and privacy
 
