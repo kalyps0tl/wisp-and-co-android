@@ -41,6 +41,7 @@ public final class WispState {
         String wx=weather(c),type=profile(c),zone=p.getString("zone","dock"),activity=p.getString("activity","reading");
         String note=p.getString("note","");
         int newCreations=0;
+        String interest=WispMoments.favored(c);
         // Context is a *nudge*, never a command. Most of Wisp's choices remain
         // based on its own temperament, interests, weather and projects.
         String motion=ContextEngine.motion(c);
@@ -75,6 +76,18 @@ public final class WispState {
                 activity="bringing gifts to woodland neighbors";
             } else if("wonder".equals(type) && n<36){
                 activity="following a mysterious little trail";
+            }
+            // Answers become gentle tendencies, not fixed commands:
+            // Wisp still surprises us with unrelated projects and ideas.
+            if(n<28 && "curiosity".equals(interest) && !"storm".equals(wx)){
+                zone=r.nextBoolean()?"forest":"pond";
+                activity="investigating a mysterious little path";
+            }else if(n<28 && "making".equals(interest)){
+                zone=r.nextBoolean()?"cottage":"garden";
+                activity="experimenting with a tiny new creation";
+            }else if(n<28 && "kindness".equals(interest)){
+                zone=r.nextBoolean()?"garden":"pond";
+                activity="preparing a surprise for a woodland friend";
             }
             if(!"storm".equals(wx) && n<38) {
                 if("walking".equals(motion)) {
@@ -112,6 +125,9 @@ public final class WispState {
         if(newCreations>0)WorldJournal.add(c,"Wisp finished "+newCreations+" small creation(s) while following its own ideas.");
         WispEvolution.refresh(c);
         WorldEvents.seasonalAutonomy(c);
+        // Offer an occasional genuinely optional conversation. The question
+        // never expires, and no prompt is needed to maintain the friendship.
+        WispMoments.consider(c,slot,new Random(slot*7919L+type.hashCode()));
     }
     /** A lightweight, immediate response when the user explicitly changes context. */
     public static void reactToContext(Context c) {
