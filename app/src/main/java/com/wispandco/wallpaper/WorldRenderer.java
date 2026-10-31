@@ -56,6 +56,7 @@ public final class WorldRenderer {
             else if ("pond".equals(zone)) pond(backing);
             else dock(backing);
         }
+        scenicDetails(backing,zone);
         backing.restore();
         cacheZone = zone;
         cacheWeather = wx;
@@ -81,7 +82,11 @@ public final class WorldRenderer {
                 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<6;
         cacheScene(zone, weather, night);
         c.save();
-        c.scale(w/400f, h/900f);
+        // Preserve proportions on differently shaped Android displays. Slight
+        // cropping is preferable to squashing Wisp and its cottage.
+        float scale=Math.max(w/400f,h/900f);
+        c.translate((w-400f*scale)/2f,(h-900f*scale)/2f);
+        c.scale(scale,scale);
         c.drawBitmap(sceneCache, null, new RectF(0, 0, 400, 900), bitmapPaint);
         time=(timestamp%1000000L)/1000f;
         this.weather=weather;
@@ -89,8 +94,76 @@ public final class WorldRenderer {
         wildlife(c,zone);
         if("cottage".equals(zone))decorations(c,pumpkins,tree,candles);
         wisp(c,spirit,zone,stage,trait);
+        foreground(c,zone);
         atmospheric(c,weather);
         c.restore();
+    }
+    /** Low-cost details baked into the cached background, not every frame. */
+    private void scenicDetails(Canvas c,String zone){
+        if("cottage".equals(zone)){
+            // Worn woven rug, framed little painting, plant, books and a lamp.
+            oval(c,0xff987e8d,80,751,252,90);
+            oval(c,0xffd6b5bb,95,760,221,71);
+            oval(c,0xffefe1d5,120,772,175,44);
+            for(int i=0;i<7;i++)line(c,0xffc39ba9,2,132+i*22,775,143+i*22,815);
+            round(c,0xff9e8b8e,17,330,52,75,4);
+            round(c,0xffe8ddce,22,335,42,65,2);
+            triangle(c,0xffa0baa5,28,378,43,347,60,378);
+            circle(c,0xfff7d9a6,49,349,6);
+            round(c,0xff877b7c,337,625,44,11,3);
+            round(c,0xffad928b,352,629,7,67,2);
+            round(c,0xffae9589,341,604,31,25,5);
+            for(int i=0;i<5;i++) {
+                float a=i*6.283185f/5f;
+                line(c,0xff739c7f,3,355,605,355+(float)Math.sin(a)*23,592+(float)Math.cos(a)*18);
+                oval(c,0xff90b49a,346+(float)Math.sin(a)*23,580+(float)Math.cos(a)*18,17,10);
+            }
+            round(c,0xffebd7ab,37,614,64,19,3);
+            for(int i=0;i<5;i++)round(c,0xff8e7892,41+i*12,603-i%2*3,8,15,2);
+            return;
+        }
+        // Reeds, flower patches, stones and moss give the landscape depth.
+        for(int i=0;i<8;i++){
+            float x=11+i*55;
+            float y=674+(i%4)*51;
+            oval(c,0x6680a39a,x,y,47,23);
+            if("pond".equals(zone)||"dock".equals(zone)){
+                line(c,0xff6b9886,2,x+18,y+28,x+14,y-17);
+                line(c,0xff779f8e,2,x+22,y+30,x+30,y-12);
+                oval(c,0xffc9b4a6,x+10,y-19,7,15);
+                oval(c,0xffc9b4a6,x+27,y-16,6,13);
+            }else {
+                for(int j=0;j<3;j++){
+                    float px=x+5+j*12,py=y+6+j%2*10;
+                    circle(c,i%2==0?0xffd7bdd4:0xfff3e2ae,px,py,4);
+                    circle(c,0xfff8edca,px,py,1.5f);
+                }
+            }
+        }
+        if("forest".equals(zone)){
+            // Soft moss and tiny shelf mushrooms on foreground trunks.
+            for(int i=0;i<4;i++){
+                float x=i*99+16,y=487+(i%2)*80;
+                oval(c,0xffac91a0,x,y,24,9);
+                oval(c,0xffead6c7,x+3,y+7,19,6);
+            }
+        }
+    }
+    private void foreground(Canvas c,String zone){
+        if("cottage".equals(zone))return;
+        // Sparse foreground framing creates parallax-like depth rather than
+        // leaving the character pasted onto a flat single-plane image.
+        for(int side=0;side<2;side++){
+            float origin=side==0?0:400;
+            for(int i=0;i<6;i++){
+                float x=origin+(side==0?1:-1)*(i*12+6);
+                float h=40+i%3*11;
+                line(c,0x99718d83,2,x,925,x+(side==0?12:-12),872-h);
+                if(i%2==0)oval(c,0xaa9bb5a1,
+                    Math.min(x,x+(side==0?20:-20))-8,858-h,
+                    31,14);
+            }
+        }
     }
     private void movingWater(Canvas c) {
         // A few ripples give the pond movement without redrawing the scenery.
@@ -232,14 +305,33 @@ public final class WorldRenderer {
         line(c,0xfff5e5cf,6,196,276,291,276);
     }
     private void wildlife(Canvas c,String zone){
+        int hour=Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        boolean night=hour>=19||hour<6;
+        if("forest".equals(zone)){
+            // Alder peers from a branch. Owl eyes open after dusk.
+            oval(c,0xff8d7789,285,430,46,63);
+            triangle(c,0xff8d7789,289,444,292,420,303,443);
+            triangle(c,0xff8d7789,312,443,324,420,328,445);
+            oval(c,night?0xffe7d9a8:0xffc0a7a8,295,444,13,12);
+            oval(c,night?0xffe7d9a8:0xffc0a7a8,313,444,13,12);
+            if(night){circle(c,0xff51445d,301,450,3);circle(c,0xff51445d,319,450,3);}
+            triangle(c,0xffd9b18c,306,461,314,461,310,469);
+            line(c,0xff877382,3,266,489,354,489);
+        }
         if("cottage".equals(zone)){
+            // Fenn, the moth who lives beside the bookshelf.
+            float y=371+(float)Math.sin(time*1.3)*8;
+            oval(c,0x99ddc7e5,145,y-12,18,26);
+            oval(c,0x99f5dfea,162,y-12,18,26);
+            oval(c,0xffb998b6,160,y-7,7,22);
+
             for(int i=0;i<5;i++){
                 float x=306+i*9,y=310+(float)Math.sin(time*1.2+i)*6;
                 circle(c,0x99ffe9b0,x,y,2.1f);
             }
             return;
         }
-        if(!"storm".equals(weather)&&!"snow".equals(weather)){
+        if(!"storm".equals(weather)&&!"snow".equals(weather) && !night){
             for(int i=0;i<3;i++){
                 float x=78+i*110+(float)Math.sin(time*1.3+i)*12;
                 float y=610-i*37+(float)Math.cos(time*2+i)*12;
