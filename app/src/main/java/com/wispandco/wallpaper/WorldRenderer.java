@@ -478,13 +478,28 @@ public final class WorldRenderer {
         // Short reaching arms and expressive eyes.
         oval(c,0xffdbc8e8,-41,-1,19,31);
         oval(c,0xffdbc8e8,22,0,19,31);
-        oval(c,0xffa98cb5,-18,-8,9,13);
-        oval(c,0xffa98cb5,9,-8,9,13);
-        circle(c,0xfffdf9ff,-15,-5,2);
-        circle(c,0xfffdf9ff,12,-5,2);
+        // Wisp occasionally blinks; pupils glance toward the current path.
+        boolean blink=(time%6.1f)>5.88f;
+        if(blink){
+            line(c,0xffa98cb5,2.8f,-18,-1,-9,-1);
+            line(c,0xffa98cb5,2.8f,9,-1,18,-1);
+        } else {
+            oval(c,0xffa98cb5,-18,-8,9,13);
+            oval(c,0xffa98cb5,9,-8,9,13);
+            circle(c,0xfffdf9ff,-15,-5,2);
+            circle(c,0xfffdf9ff,12,-5,2);
+        }
         oval(c,0x77d9a6b9,-23,12,13,8);
         oval(c,0x77d9a6b9,10,12,13,8);
         line(c,0xffab90b5,2,-4,14,4,14);
+        // A tiny light accompanies Wisp outdoors in the evening.
+        int hour=Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if(!"cottage".equals(zone) && (hour>=19 || hour<6)){
+            line(c,0xffaa92aa,2,37,13,45,22);
+            oval(c,0x55ffdf9e,35,12,28,28);
+            round(c,0xffaa9289,44,21,11,18,3);
+            oval(c,0xffffe5a7,46,24,7,11);
+        }
         if(stage>0){
             int marking="moss".equals(trait)?0xff7cab8b:
                 "petals".equals(trait)?0xffe7b4cc:
