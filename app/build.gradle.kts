@@ -7,8 +7,8 @@ android {
         applicationId = "com.wispandco.wallpaper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.3.1-android-compat"
+        versionCode = 5
+        versionName = "0.4-context-engine"
     }
     // CI generates this test-only key and restores it from Actions cache.
     // Local builds can continue using the default Android debug key.
