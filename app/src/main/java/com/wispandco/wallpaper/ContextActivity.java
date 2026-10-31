@@ -73,10 +73,15 @@ public final class ContextActivity extends Activity {
             boolean newValue=!WispState.prefs(this).getBoolean("reduce_motion",false);
             ContextEngine.setReducedMotion(this,newValue);render();
         });
+        button("Quiet evening routines: "+(ContextEngine.gentleEvenings(this)?"ON":"OFF"),()->{
+            ContextEngine.setGentleEvenings(this,!ContextEngine.gentleEvenings(this));
+            render();
+        });
         button("Refresh context summary",this::render);
         text("Automatic movement requires the phone's step-counter hardware, activity permission and Wisp being visible. It will show 'unknown' rather than assume you're resting when it has no recent evidence.",13);
         text("Home versus away is intentionally manual in this version. Wisp does not collect your address, follow your route or use background GPS.",13);
         text("Battery saver always reduces animation automatically, even if gentle animation is switched off.",13);
+        text("Quiet evenings make Wisp more likely to read, gather stories and rest by the fire after dark. This app does not send notifications yet.",13);
     }
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results){
         super.onRequestPermissionsResult(request,permissions,results);
