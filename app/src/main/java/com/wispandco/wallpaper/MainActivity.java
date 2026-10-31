@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,10 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle b){
         super.onCreate(b);
         render();
+        if(getIntent().getBooleanExtra("wisp_open_talk",false)){
+            getIntent().removeExtra("wisp_open_talk");
+            body.post(()->WispConversation.show(this,this::render));
+        }
         // The meeting is an invitation, not a permission wall: skipping it
         // leaves all established identity, preferences and progress unchanged.
         if(b==null && !WispState.prefs(this).getBoolean("matching_complete",false)
@@ -90,6 +95,7 @@ public final class MainActivity extends Activity {
             .setTitle("The little book of days")
             .setMessage(WorldJournal.recent(this))
             .setPositiveButton("Close",null).show());
+        button("Add Wisp to my home screen · Widget",this::addWidget);
         button("Set the living wallpaper",()->{
             Intent i=new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
             i.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,new ComponentName(this,WispWallpaper.class));
@@ -160,6 +166,17 @@ public final class MainActivity extends Activity {
         text("Seasonal activities now have visible keepsakes in the cottage. Tap Explore → Inside cottage → Explore nearby to participate. Hanukkah is optional and its dates aren't guessed from the calendar.",12);
         text("This is still a development preview: walking is tap-to-move within each scene, with scene navigation rather than a continuous roaming map. Hand-painted art is a future milestone.",12);
     }
+    private void addWidget(){
+        AppWidgetManager manager=AppWidgetManager.getInstance(this);
+        ComponentName component=new ComponentName(this,WispWidget.class);
+        if(manager.isRequestPinAppWidgetSupported()){
+            boolean asked=manager.requestPinAppWidget(component,null,null);
+            if(asked)return;
+        }
+        new AlertDialog.Builder(this).setTitle("Add your little companion")
+            .setMessage("Long-press an empty place on your Android home screen, choose Widgets, find Wisp & Co., and drag the companion widget into place. Some launchers do not support widgets.")
+            .setPositiveButton("Got it",null).show();
+    }
     private boolean prefsMet(){
         return WispState.prefs(this).getBoolean("matching_complete",false);
     }
@@ -172,6 +189,7 @@ public final class MainActivity extends Activity {
         ContextEngine.startVisible(this);
         WeatherClient.refresh(this);
         if(body!=null)render();
+        WispWidget.refresh(this);
     }
     @Override protected void onPause(){
         ContextEngine.stopVisible(this);
