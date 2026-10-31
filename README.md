@@ -17,6 +17,9 @@ The v0.3 explorer/wallpaper foundation includes:
 - Manual weather previews and opt-in approximate-location weather fetched from Open-Meteo.
 - **v0.4 context dashboard** showing local time-of-day, battery/charging and battery saver, manual home/away, manual walking/resting, and opt-in Android step-counter hints while the app or live wallpaper is visible.
 - **v0.5 first meeting**: a six-question, first-launch illustrated matching experience with Wayfinder, Tinkerer, Hearthkeeper and Dreamweaver outcomes. Each outcome suggests a distinct spirit form and influences Wisp's activities. The match is optional, fully confirmable, and can be revisited; declining it preserves existing saves.
+- **v0.6 exploration and memories**: tap glowing object hotspots; follow explicitly connected paths between scenes; meet the frog, bee, owl and moth and build ongoing friendships; interact with the cottage hearth, bookshelf, window and workbench; longer-lasting private journals and gentle quiet evening routines.
+- **v0.6 visual development**: more layered flowers, reeds, foliage, cottage furnishings and character foreground plants; a custom Wisp launcher icon; proportional scene rendering on varied phone aspect ratios. The art is still procedurally drawn, not yet the planned hand-painted layered art.
+- **v0.6 privacy and reliability**: user-owned JSON save export/import and permanent local-data erase controls, plus automated navigation tests in CI.
 - Context gently nudges autonomous activity choices; a user can disable physical-activity sensing without losing gameplay. Battery saver automatically reduces wallpaper and explorer animation frequency.
 - Automatic development debug APK compilation via GitHub Actions.
 
