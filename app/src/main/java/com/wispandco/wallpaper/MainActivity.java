@@ -51,6 +51,11 @@ public final class MainActivity extends Activity {
         text("Making: "+WispState.currentProject(this)+" ("+WispState.projectProgress(this)+"/4)  ·  Creations: "+WispState.projects(this),14);
         text("✉ "+WispState.note(this),15);
         text("Growing: "+WispEvolution.description(this)+"  ·  Discoveries: "+WispEvolution.discoveries(this),15);
+        text("Wisp senses: "+ContextEngine.dayPart()+" · "+
+            ContextEngine.place(this)+" · movement "+ContextEngine.motion(this)+
+            " · "+(ContextEngine.batterySaver(this)?"battery saver active":"normal battery mode"),13);
+        button("Context & senses · your controls",()->
+            startActivity(new Intent(this,ContextActivity.class)));
         button("Explore Wisp's living world",()->startActivity(new Intent(this,ExplorerActivity.class)));
         button("Read our discovery journal",()->new AlertDialog.Builder(this)
             .setTitle("The little book of days")
@@ -152,5 +157,14 @@ public final class MainActivity extends Activity {
         super.onRequestPermissionsResult(request,permissions,grants);
         if(request==7 && grants.length>0 && grants[0]==PackageManager.PERMISSION_GRANTED)WeatherClient.refresh(this);
     }
-    @Override protected void onResume(){super.onResume();WeatherClient.refresh(this);}
+    @Override protected void onResume(){
+        super.onResume();
+        ContextEngine.startVisible(this);
+        WeatherClient.refresh(this);
+        if(body!=null)render();
+    }
+    @Override protected void onPause(){
+        ContextEngine.stopVisible(this);
+        super.onPause();
+    }
 }
