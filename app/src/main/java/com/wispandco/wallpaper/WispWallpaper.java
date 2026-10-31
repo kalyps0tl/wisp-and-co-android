@@ -19,23 +19,36 @@ public final class WispWallpaper extends WallpaperService {
         private final WorldRenderer renderer=new WorldRenderer();
         private final Paint labels=new Paint(Paint.ANTI_ALIAS_FLAG);
         private boolean visible=false;
+        private boolean contextSubscribed=false;
         private final Runnable tick=this::render;
         private long lastRefresh=0;
         WispEngine(){
             setTouchEventsEnabled(true);
             labels.setTypeface(Typeface.create("sans-serif-medium",Typeface.NORMAL));
         }
+        private void manageContextSubscription(boolean desired) {
+            if(desired && !contextSubscribed) {
+                ContextEngine.startVisible(WispWallpaper.this);
+                contextSubscribed=true;
+            } else if(!desired && contextSubscribed) {
+                ContextEngine.stopVisible(WispWallpaper.this);
+                contextSubscribed=false;
+            }
+        }
         @Override public void onVisibilityChanged(boolean isVisible) {
-            visible=isVisible;handler.removeCallbacks(tick);if(visible)render();
+            visible=isVisible;
+            manageContextSubscription(isVisible);
+            handler.removeCallbacks(tick);
+            if(visible)render();
         }
         @Override public void onSurfaceChanged(SurfaceHolder holder,int format,int width,int height) {
             super.onSurfaceChanged(holder,format,width,height);if(visible)render();
         }
         @Override public void onSurfaceDestroyed(SurfaceHolder holder) {
-            super.onSurfaceDestroyed(holder);visible=false;handler.removeCallbacks(tick);
+            super.onSurfaceDestroyed(holder);visible=false;manageContextSubscription(false);handler.removeCallbacks(tick);
         }
         @Override public void onDestroy() {
-            visible=false;handler.removeCallbacks(tick);renderer.release();super.onDestroy();
+            visible=false;manageContextSubscription(false);handler.removeCallbacks(tick);renderer.release();super.onDestroy();
         }
         @Override public void onTouchEvent(MotionEvent e) {
             if(e.getAction()==MotionEvent.ACTION_UP) {WispState.pet(WispWallpaper.this);render();}
@@ -73,7 +86,8 @@ public final class WispWallpaper extends WallpaperService {
             }catch(Exception ignored){ /* Surface can disappear during home-screen switches. */ }
             finally {if(c!=null)try{surface.unlockCanvasAndPost(c);}catch(Exception ignored){}}
             // Aim for 30 FPS while visible; never busy-loop if a frame runs long.
-            if(visible)handler.postDelayed(tick,Math.max(1,33-(SystemClock.uptimeMillis()-frameStart)));
+            int frameTarget=ContextEngine.reducedMotion(WispWallpaper.this)?100:33;
+            if(visible)handler.postDelayed(tick,Math.max(1,frameTarget-(SystemClock.uptimeMillis()-frameStart)));
         }
     }
 }
