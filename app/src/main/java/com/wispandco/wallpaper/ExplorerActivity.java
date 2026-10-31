@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,6 +57,8 @@ public final class ExplorerActivity extends Activity {
         friend.setAllCaps(false);
         top.addView(friend);
         friend.setOnClickListener(v->visitNeighbor());
+        Button paths=new Button(this);paths.setText("Follow a path…");paths.setAllCaps(false);
+        top.addView(paths);paths.setOnClickListener(v->showPaths());
         root.addView(top,new FrameLayout.LayoutParams(-1,-2,Gravity.TOP));
 
         HorizontalScrollView strip=new HorizontalScrollView(this);
@@ -87,6 +90,23 @@ public final class ExplorerActivity extends Activity {
             ".  Your world: "+ContextEngine.dayPart()+", "+ContextEngine.motion(this)+
             ". Tap the ground to walk, or explore nearby.");
         scene.invalidate();
+    }
+    private void travel(String destination){
+        if(!SceneRoutes.connects(activeZone,destination))return;
+        activeZone=destination;
+        WispState.set(this,"zone",destination);
+        WispState.prefs(this).edit()
+            .putString("note","A path led us to the "+SceneRoutes.title(destination).toLowerCase()+".")
+            .apply();
+        update();
+    }
+    private void showPaths(){
+        String[] possible=SceneRoutes.paths(activeZone);
+        String[] options=new String[possible.length];
+        for(int i=0;i<possible.length;i++)options[i]="Take the path to the "+SceneRoutes.title(possible[i]);
+        new AlertDialog.Builder(this).setTitle("Where does the trail lead?")
+            .setItems(options,(d,i)->travel(possible[i]))
+            .setNegativeButton("Stay here",null).show();
     }
     private void visitNeighbor(){
         int n=WorldNeighbors.index(activeZone);
@@ -159,6 +179,7 @@ public final class ExplorerActivity extends Activity {
     }
     private final class SceneView extends View {
         private final WorldRenderer renderer=new WorldRenderer();
+        private final Paint marker=new Paint(Paint.ANTI_ALIAS_FLAG);
         SceneView(){super(ExplorerActivity.this);}
         @Override protected void onDraw(Canvas canvas){
             renderer.draw(canvas,getWidth(),getHeight(),activeZone,
@@ -169,12 +190,34 @@ public final class ExplorerActivity extends Activity {
                 WorldEvents.selected(ExplorerActivity.this,0)?WorldEvents.progress(ExplorerActivity.this,0):0,
                 WorldEvents.selected(ExplorerActivity.this,1)?WorldEvents.progress(ExplorerActivity.this,1):0,
                 WorldEvents.selected(ExplorerActivity.this,2)?WorldEvents.progress(ExplorerActivity.this,2):0);
+            // Visible path exits, using the same centered aspect-fill transform
+            // as the world renderer. Quick area buttons remain available too.
+            float scale=Math.max(getWidth()/400f,getHeight()/900f);
+            float tx=(getWidth()-400f*scale)/2f,ty=(getHeight()-900f*scale)/2f;
+            canvas.save();canvas.translate(tx,ty);canvas.scale(scale,scale);
+            marker.setColor(0x99786b80);
+            canvas.drawRoundRect(2,650,86,713,18,18,marker);
+            canvas.drawRoundRect(314,650,398,713,18,18,marker);
+            marker.setColor(0xfffff1e6);marker.setTextSize(13);
+            marker.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("←",43,674,marker);
+            canvas.drawText(SceneRoutes.title(SceneRoutes.left(activeZone)),43,692,marker);
+            canvas.drawText("→",357,674,marker);
+            canvas.drawText(SceneRoutes.title(SceneRoutes.right(activeZone)),357,692,marker);
+            canvas.restore();
             if(animating && getVisibility()==VISIBLE)postInvalidateDelayed(ContextEngine.reducedMotion(ExplorerActivity.this)?110:50);
         }
         @Override public boolean onTouchEvent(MotionEvent event){
             if(event.getAction()==MotionEvent.ACTION_UP){
-                float x=event.getX()/Math.max(1,getWidth())*400f;
-                float y=event.getY()/Math.max(1,getHeight())*900f;
+                float scale=Math.max(getWidth()/400f,getHeight()/900f);
+                float x=(event.getX()-(getWidth()-400f*scale)/2f)/scale;
+                float y=(event.getY()-(getHeight()-900f*scale)/2f)/scale;
+                if(y>=650 && y<=713 && x<=86){
+                    travel(SceneRoutes.left(activeZone));return true;
+                }
+                if(y>=650 && y<=713 && x>=314){
+                    travel(SceneRoutes.right(activeZone));return true;
+                }
                 if(y>225 && y<830){
                     renderer.setDestination(x);
                     WispState.prefs(ExplorerActivity.this).edit()
