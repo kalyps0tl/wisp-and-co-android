@@ -46,6 +46,12 @@ See **[ANDROID_PRODUCT_PLAN.md](ANDROID_PRODUCT_PLAN.md)** for the contextual in
 
 Note: the widget is not continuously animated. Update frequency and widget availability are controlled by Android and the home-screen launcher. A device build being green is not a substitute for actual on-device interaction testing.
 
+## v0.9 — Storybook ambience
+
+- Choose **automatic daylight, always daytime, or always moonlit** scenes for both the native explorer and live wallpaper. This only changes the in-game lighting; it doesn't alter phone brightness or system theme.
+- Choose an optional **Lavender Dreams, Woodland Moss, Golden Hour, or Original** colour treatment, applied to the landscape while keeping the creature readable.
+- The personalized illustrated companion card reflects these preferences, and they are included in private save exports.
+
 ## Download development APKs
 
 Go to [GitHub Actions](https://github.com/kalyps0tl/wisp-and-co-android/actions), open a successful run, and download the `WispAndCo-debug-apk` artifact. Extract the ZIP and install the APK with Android Files.
