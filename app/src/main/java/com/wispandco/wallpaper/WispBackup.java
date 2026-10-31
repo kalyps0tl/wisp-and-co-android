@@ -36,11 +36,16 @@ public final class WispBackup {
         "neighbor_3_last","neighbor_0_gift","neighbor_1_gift","neighbor_2_gift",
         "neighbor_3_gift"
     ));
+    private static boolean allowed(String key) {
+        return KEYS.contains(key) ||
+            (key.startsWith("hotspot_") && key.endsWith("_last")
+                && key.length()<=64 && key.matches("[a-z0-9_]+"));
+    }
     private static JSONObject build(Context c) throws Exception {
         SharedPreferences p=WispState.prefs(c);
         JSONObject values=new JSONObject();
         for(Map.Entry<String,?> entry:p.getAll().entrySet()){
-            if(!KEYS.contains(entry.getKey())||entry.getValue()==null)continue;
+            if(!allowed(entry.getKey())||entry.getValue()==null)continue;
             Object value=entry.getValue();
             JSONObject typed=new JSONObject();
             if(value instanceof String) {
@@ -83,11 +88,11 @@ public final class WispBackup {
         if(!FORMAT.equals(root.optString("format"))||root.optInt("schema")!=VERSION)
             throw new IllegalArgumentException("This is not a compatible Wisp & Co save.");
         JSONObject values=root.getJSONObject("contents");
-        if(values.length()>KEYS.size()+10)throw new IllegalArgumentException("Save contains too many entries.");
+        if(values.length()>KEYS.size()+40)throw new IllegalArgumentException("Save contains too many entries.");
         // Validate every known entry *before* changing any existing state.
         for(java.util.Iterator<String> keys=values.keys();keys.hasNext();){
             String key=keys.next();
-            if(!KEYS.contains(key))continue;
+            if(!allowed(key))continue;
             JSONObject item=values.getJSONObject(key);
             String type=item.getString("type");
             Object value=item.get("value");
@@ -103,7 +108,7 @@ public final class WispBackup {
         SharedPreferences.Editor editor=WispState.prefs(c).edit();
         int restored=0;
         for(java.util.Iterator<String> it=values.keys();it.hasNext();){
-            String key=it.next();if(!KEYS.contains(key))continue;
+            String key=it.next();if(!allowed(key))continue;
             JSONObject entry=values.getJSONObject(key);
             String type=entry.getString("type");
             if("string".equals(type))editor.putString(key,entry.getString("value"));
