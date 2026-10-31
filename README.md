@@ -36,6 +36,16 @@ The v0.3 explorer/wallpaper foundation includes:
 
 See **[ANDROID_PRODUCT_PLAN.md](ANDROID_PRODUCT_PLAN.md)** for the contextual intelligence feature matrix, privacy boundaries, platform compatibility and Play roadmap. See **[FEATURE_AUDIT.md](FEATURE_AUDIT.md)** for the verified feature inventory and priorities still needed for the complete game.
 
+## v0.8 — Wisp at a glance, living plants and daily letters
+
+- **Native Android home-screen widget** (optional) shows Wisp's current activity, daytime context and area, with Explore and Talk shortcuts. It refreshes at system-managed intervals and when the companion app is opened. Add it with the button in the app or your launcher's Widgets list. No watch or additional permissions are needed.
+- **A real-day storybook garden** with three beds and five plant varieties. Seedlings appear, grow and bloom over calendar days, including while the app is closed. The flowers never die from neglect.
+- **Daily letter from Wisp**, composed on-device from the current world state, personality preferences, garden and weather, retained for the day.
+- Private local save/restore now includes garden seeds, planting dates and daybook letters.
+- The underlying native code continues to work without Google services, a location permission, or a connected wearable.
+
+Note: the widget is not continuously animated. Update frequency and widget availability are controlled by Android and the home-screen launcher. A device build being green is not a substitute for actual on-device interaction testing.
+
 ## Download development APKs
 
 Go to [GitHub Actions](https://github.com/kalyps0tl/wisp-and-co-android/actions), open a successful run, and download the `WispAndCo-debug-apk` artifact. Extract the ZIP and install the APK with Android Files.
