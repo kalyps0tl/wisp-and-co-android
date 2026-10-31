@@ -68,7 +68,14 @@ public final class MainActivity extends Activity {
             " · "+(ContextEngine.batterySaver(this)?"battery saver active":"normal battery mode"),13);
         button("Context & senses · your controls",()->
             startActivity(new Intent(this,ContextActivity.class)));
+        text("EXPLORE THE LIVING WORLD",18);
         button("Explore Wisp's living world",()->startActivity(new Intent(this,ExplorerActivity.class)));
+        button("Visit our woodland neighbors",()->new AlertDialog.Builder(this)
+            .setTitle("Friends around the cottage")
+            .setMessage(WorldNeighbors.summary(this))
+            .setPositiveButton("Go and visit",(d,i)->
+                startActivity(new Intent(this,ExplorerActivity.class)))
+            .setNegativeButton("Close",null).show());
         button("Read our discovery journal",()->new AlertDialog.Builder(this)
             .setTitle("The little book of days")
             .setMessage(WorldJournal.recent(this))
@@ -78,6 +85,7 @@ public final class MainActivity extends Activity {
             i.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,new ComponentName(this,WispWallpaper.class));
             startActivity(i);
         });
+        text("CARE AND CUSTOMIZE",18);
         button("Pet Wisp",()->{WispState.pet(this);render();});
         button("Customize spirit form",()->new AlertDialog.Builder(this).setTitle("Which little spirit?")
             .setItems(spirits,(d,i)->{WispState.set(this,"spirit",WispState.SPIRITS[i]);render();}).show());
@@ -112,6 +120,9 @@ public final class MainActivity extends Activity {
               .setPositiveButton("Save",(d,i)->{String n=edit.getText().toString().trim();if(!n.isEmpty())WispState.set(this,"name",n);render();})
               .setNegativeButton("Cancel",null).show();
         });
+        text("WEATHER, SEASONS & PRIVACY",18);
+        button("Save, restore or erase my world",()->
+            startActivity(new Intent(this,SaveActivity.class)));
         button("Preview different weather",()->new AlertDialog.Builder(this).setTitle("Preview weather")
             .setItems(new String[]{"Clear","Cloudy","Rain","Snow","Fog","Storm"},(d,i)->{
                 String[] options={"clear","cloud","rain","snow","fog","storm"};
