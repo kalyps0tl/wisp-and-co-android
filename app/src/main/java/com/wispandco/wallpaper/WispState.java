@@ -29,6 +29,7 @@ public final class WispState {
         SharedPreferences p=prefs(c);
         p.edit().putInt("affection", Math.min(999,p.getInt("affection",0)+1))
             .putString("note", "I was just about to tell you what I found by the pond!").apply();
+        WispEvolution.refresh(c);
     }
     public static synchronized void advance(Context c) {
         SharedPreferences p=prefs(c);
@@ -39,6 +40,7 @@ public final class WispState {
         int complete=p.getInt("projects",0),progress=p.getInt("projectProgress",0);
         String wx=weather(c),type=profile(c),zone=p.getString("zone","dock"),activity=p.getString("activity","reading");
         String note=p.getString("note","");
+        int newCreations=0;
         for (int i=0;i<delta;i++) {
             Random r=new Random((last+i+1)*104729L + type.hashCode() * 31L);
             int n=r.nextInt(100);
@@ -59,7 +61,7 @@ public final class WispState {
             if (r.nextInt(4)==0) {
                 progress++;
                 if (progress>=4) {
-                    progress=0; complete++;
+                    progress=0; complete++; newCreations++;
                     note="I finished "+PROJECTS[(complete-1)%PROJECTS.length]+"! Want to come see?";
                 }
             }
@@ -69,6 +71,9 @@ public final class WispState {
         }
         p.edit().putLong("slot",slot).putString("zone",zone).putString("activity",activity)
             .putInt("projectProgress",progress).putInt("projects",complete).putString("note",note).apply();
+        if(newCreations>0)WorldJournal.add(c,"Wisp finished "+newCreations+" small creation(s) while following its own ideas.");
+        WispEvolution.refresh(c);
+        WorldEvents.seasonalAutonomy(c);
     }
     public static String currentProject(Context c) { return PROJECTS[projects(c)%PROJECTS.length]; }
 }
