@@ -51,6 +51,11 @@ public final class MainActivity extends Activity {
         scroll.addView(body);setContentView(scroll);
         text("✦ Wisp & Co.",29);
         text("A little world that keeps living when you are away.",15);
+        WispHomeCard worldCard=new WispHomeCard(this);
+        LinearLayout.LayoutParams cardLp=new LinearLayout.LayoutParams(-1,dp(227));
+        cardLp.topMargin=dp(6);cardLp.bottomMargin=dp(14);
+        body.addView(worldCard,cardLp);
+        worldCard.setOnClickListener(v->startActivity(new Intent(this,ExplorerActivity.class)));
         boolean met=prefsMet();
         text(met?"Your companion: "+WispState.name(this)+" · "+WispState.profile(this)+" · "+WispState.spirit(this):
             "A little spirit is ready to meet you.",16);
@@ -62,6 +67,10 @@ public final class MainActivity extends Activity {
         text("Currently "+WispState.activity(this)+" at the "+WispState.zone(this)+".",15);
         text("Making: "+WispState.currentProject(this)+" ("+WispState.projectProgress(this)+"/4)  ·  Creations: "+WispState.projects(this),14);
         text("✉ "+WispState.note(this),15);
+        text("Wisp's growing interests: "+WispMoments.favored(this),13);
+        button(WispMoments.pending(this)?"Wisp has something to ask you ♥":
+            "Spend a little time talking with Wisp ♥",
+            ()->WispConversation.show(this,this::render));
         text("Growing: "+WispEvolution.description(this)+"  ·  Discoveries: "+WispEvolution.discoveries(this),15);
         text("Wisp senses: "+ContextEngine.dayPart()+" · "+
             ContextEngine.place(this)+" · movement "+ContextEngine.motion(this)+
