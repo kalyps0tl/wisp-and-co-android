@@ -2,13 +2,13 @@ plugins { id("com.android.application") }
 val devDebugKey = file("signing/dev-debug.keystore")
 android {
     namespace = "com.wispandco.wallpaper"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.wispandco.wallpaper"
-        minSdk = 31
-        targetSdk = 35
-        versionCode = 3
-        versionName = "0.3-living-world"
+        minSdk = 29
+        targetSdk = 36
+        versionCode = 4
+        versionName = "0.3.1-android-compat"
     }
     // CI generates this test-only key and restores it from Actions cache.
     // Local builds can continue using the default Android debug key.
