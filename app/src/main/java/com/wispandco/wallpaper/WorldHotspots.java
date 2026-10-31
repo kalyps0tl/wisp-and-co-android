@@ -30,7 +30,7 @@ public final class WorldHotspots {
         };
         if("garden".equals(zone))return new Point[]{
             p("garden_bee","Bramble the bee","Someone is visiting the sweet wildflowers.",145,593,"friend",1),
-            p("garden_flowers","Wildflower patch","A little patch of daisies and lavender.",87,715,"discover",-1),
+            p("garden_flowers","Living garden","Three beds full of little possibilities.",87,715,"garden",-1),
             p("garden_door","Cottage door","The door is open to Wisp's warm home.",303,535,"cottage",-1)
         };
         if("forest".equals(zone))return new Point[]{
