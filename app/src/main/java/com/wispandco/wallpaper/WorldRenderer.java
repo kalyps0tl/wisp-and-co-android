@@ -18,6 +18,12 @@ public final class WorldRenderer {
     // Scene geometry is expensive at full phone resolution. Cache the still
     // 600x1350 storybook scenery and animate only Wisp, wildlife and weather.
     private Bitmap sceneCache;
+    private float walkingX = Float.NaN;
+    private float destinationX = Float.NaN;
+    private String walkingZone = "";
+    public void setDestination(float x){
+        destinationX=Math.max(52,Math.min(346,x));
+    }
     private String cacheZone = "";
     private String cacheWeather = "";
     private boolean cacheNight;
@@ -68,7 +74,8 @@ public final class WorldRenderer {
         p.setColor(color);p.setShader(null);Path t=new Path();t.moveTo(ax,ay);t.lineTo(bx,by);t.lineTo(cx,cy);t.close();c.drawPath(t,p);
     }
     private void circle(Canvas c,int color,float x,float y,float rad){p.setColor(color);p.setShader(null);c.drawCircle(x,y,rad,p);}
-    public void draw(Canvas c,int w,int h,String zone,String weather,String spirit,long timestamp){
+    public void draw(Canvas c,int w,int h,String zone,String weather,String spirit,long timestamp,
+                     int stage,String trait,int pumpkins,int tree,int candles){
         if(w<=0||h<=0)return;
         boolean night=Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>=19
                 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<6;
@@ -80,7 +87,8 @@ public final class WorldRenderer {
         this.weather=weather;
         if ("pond".equals(zone) || "dock".equals(zone)) movingWater(c);
         wildlife(c,zone);
-        wisp(c,spirit,zone);
+        if("cottage".equals(zone))decorations(c,pumpkins,tree,candles);
+        wisp(c,spirit,zone,stage,trait);
         atmospheric(c,weather);
         c.restore();
     }
@@ -247,14 +255,69 @@ public final class WorldRenderer {
             }
         }
     }
-    private void wisp(Canvas c,String shape,String zone){
+    private void decorations(Canvas c,int pumpkin,int tree,int candles){
+        if(pumpkin>0) {
+            // Hand-carved pumpkin on Wisp's wooden workbench.
+            oval(c,0xffc18e5e,38,640,43,33);
+            oval(c,0xffe5a76c,42,629,38,37);
+            line(c,0xff789078,4,61,633,63,622);
+            if(pumpkin>=2)triangle(c,0xff665364,50,644,54,637,58,644);
+            if(pumpkin>=3)triangle(c,0xff665364,65,644,69,637,73,644);
+            if(pumpkin>=4) {
+                line(c,0xff665364,2,51,651,72,651);
+                circle(c,0xffffedba,62,649,3);
+            }
+        }
+        if(tree>0){
+            line(c,0xff876f6a,6,191,712,191,510);
+            triangle(c,0xff6f9a88,137,660,191,514,245,660);
+            triangle(c,0xff82ad93,145,603,191,483,236,603);
+            triangle(c,0xff9cbd9c,153,553,191,466,229,553);
+            if(tree>=2)circle(c,0xfffbe4bb,191,476,7);
+            int count=Math.max(0,tree-2)*2;
+            for(int i=0;i<count;i++){
+                int color=i%3==0?0xffffcfaa:i%3==1?0xffe3c7ea:0xfff6e5bd;
+                circle(c,color,172+(i*29)%42,556+(i*19)%94,4);
+            }
+        }
+        if(candles>0){
+            // Nine-branched decorative hanukkiah; central shamash is higher.
+            // A personal religious observance is not simulated automatically.
+            line(c,0xffbfa479,4,260,630,360,630);
+            line(c,0xffbfa479,5,309,630,309,654);
+            for(int i=0;i<9;i++){
+                float x=264+i*12;
+                float top=i==4?591:603;
+                line(c,0xffbfa479,3,x,631,x,top+10);
+                round(c,0xfff4e8cd,x-3,top,6,14,2);
+                if(i==4 || i<4&&i<candles || i>4&&i-1<candles) {
+                    oval(c,0xffffc975,x-3,top-9,6,10);
+                }
+            }
+        }
+    }
+    private void wisp(Canvas c,String shape,String zone,int stage,String trait){
         float y="cottage".equals(zone)?738:("pond".equals(zone)?695:("garden".equals(zone)?724:("forest".equals(zone)?716:705)));
-        float x="dock".equals(zone)?294:("garden".equals(zone)?177:("pond".equals(zone)?161:211));
-        float bob=(float)Math.sin(time*2.2)*5;
-        c.save();c.translate(x,y+bob);
-        oval(c,0x447b6c89,-32,42,66,12);
+        float baseX="dock".equals(zone)?294:("garden".equals(zone)?177:("pond".equals(zone)?161:211));
+        if(!zone.equals(walkingZone)){
+            walkingZone=zone;walkingX=baseX;destinationX=Float.NaN;
+        }
+        float goal=Float.isNaN(destinationX)?baseX+(float)Math.sin(time*.30f)*34:destinationX;
+        if(Float.isNaN(walkingX))walkingX=baseX;
+        walkingX+=(goal-walkingX)*.12f;
+        float step=(float)Math.sin(time*5f)*Math.min(3,Math.abs(goal-walkingX)*.08f);
+        float bob=(float)Math.sin(time*2.2)*2;
+        c.save();c.translate(walkingX,y+bob+step);
+        float growth=1f+stage*.085f;
+        c.scale(growth,growth);
+        oval(c,0x447b6c89,-31,37,65,12);
+        // Visible feet and tail make Wisp a little embodied creature, not a floating sphere.
+        oval(c,0xffc9b3d9,-28,25,23,21);
+        oval(c,0xffc9b3d9,7,25,23,21);
+        oval(c,0xffdbcae4,-41,1,28,25);
         if("moth".equals(shape)){
-            oval(c,0x99d9c9e7,-46,-21,36,48);oval(c,0x99e8d7ee,11,-21,36,48);
+            oval(c,0x99d9c9e7,-51,-28,39,54);
+            oval(c,0x99e8d7ee,12,-28,39,54);
             line(c,0xffa790b8,3,-9,-28,-17,-54);line(c,0xffa790b8,3,9,-28,17,-54);
             circle(c,0xffc8a9c9,-17,-54,5);circle(c,0xffc8a9c9,17,-54,5);
         }else if("antlered".equals(shape)){
@@ -271,12 +334,39 @@ public final class WorldRenderer {
             triangle(c,0xffc4a2cb,-23,-30,-28,-46,-10,-29);
             triangle(c,0xffc4a2cb,23,-30,28,-46,10,-29);
         }
-        oval(c,0xffead9f0,-35,-32,70,80);
-        oval(c,0xfff8ecf5,-25,-27,50,69);
-        oval(c,0xffa98cb5,-18,-6,9,13);oval(c,0xffa98cb5,9,-6,9,13);
-        oval(c,0x77d9a6b9,-23,13,14,9);oval(c,0x77d9a6b9,9,13,14,9);
-        line(c,0xffab90b5,2,-4,17,4,17);
-        oval(c,0xfff9e9e1,-32,30,21,14);oval(c,0xfff9e9e1,12,30,21,14);
+        oval(c,0xffead9f0,-35,-32,70,75);
+        oval(c,0xfff8ecf5,-25,-26,50,60);
+        // Short reaching arms and expressive eyes.
+        oval(c,0xffdbc8e8,-41,-1,19,31);
+        oval(c,0xffdbc8e8,22,0,19,31);
+        oval(c,0xffa98cb5,-18,-8,9,13);
+        oval(c,0xffa98cb5,9,-8,9,13);
+        circle(c,0xfffdf9ff,-15,-5,2);
+        circle(c,0xfffdf9ff,12,-5,2);
+        oval(c,0x77d9a6b9,-23,12,13,8);
+        oval(c,0x77d9a6b9,10,12,13,8);
+        line(c,0xffab90b5,2,-4,14,4,14);
+        if(stage>0){
+            int marking="moss".equals(trait)?0xff7cab8b:
+                "petals".equals(trait)?0xffe7b4cc:
+                "frost".equals(trait)?0xffa3dce4:
+                "embers".equals(trait)?0xfff2bb8c:0xffdfd6a1;
+            circle(c,marking,0,-16,4);
+            if(stage>1){
+                circle(c,marking,-16,8,3.4f);
+                circle(c,marking,16,8,3.4f);
+            }
+            if(stage>2){
+                triangle(c,marking,-7,-29,0,-43,7,-29);
+                circle(c,marking,0,-45,3);
+            }
+            if(stage>3) {
+                for(int i=0;i<5;i++){
+                    double a=time*.25+i*6.283/5;
+                    circle(c,0x99ffefcd,(float)Math.cos(a)*47,(float)Math.sin(a)*38,2.5f);
+                }
+            }
+        }
         c.restore();
     }
     private void atmospheric(Canvas c,String wx){
