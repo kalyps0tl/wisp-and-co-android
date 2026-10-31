@@ -7,8 +7,8 @@ android {
         applicationId = "com.wispandco.wallpaper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 8
-        versionName = "0.8-widget-garden"
+        versionCode = 9
+        versionName = "0.9-storybook-ambience"
     }
     // CI generates this test-only key and restores it from Actions cache.
     // Local builds can continue using the default Android debug key.
