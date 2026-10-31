@@ -88,7 +88,7 @@ public final class ExplorerActivity extends Activity {
         heading.setText("✦ "+names[index()]+"  ·  "+WispState.weather(this));
         caption.setText(WispState.name(this)+" is "+WispState.activity(this)+
             ".  Your world: "+ContextEngine.dayPart()+", "+ContextEngine.motion(this)+
-            ". Tap the ground to walk, or explore nearby.");
+            ". Tap glimmers to interact, or tap the ground to walk.");
         scene.invalidate();
     }
     private void travel(String destination){
@@ -195,6 +195,19 @@ public final class ExplorerActivity extends Activity {
             float scale=Math.max(getWidth()/400f,getHeight()/900f);
             float tx=(getWidth()-400f*scale)/2f,ty=(getHeight()-900f*scale)/2f;
             canvas.save();canvas.translate(tx,ty);canvas.scale(scale,scale);
+            // Subtle affordances so a user can discover objects without a
+            // cluttered marker or a bright game-like HUD.
+            for(WorldHotspots.Point h:WorldHotspots.forZone(activeZone)){
+                marker.setStyle(Paint.Style.FILL);
+                marker.setColor(0x66fff0d9);
+                canvas.drawCircle(h.x,h.y,11,marker);
+                marker.setColor(0xaafff9e5);
+                canvas.drawCircle(h.x,h.y,4,marker);
+                marker.setColor(0x889f819e);
+                marker.setStyle(Paint.Style.STROKE);marker.setStrokeWidth(1.6f);
+                canvas.drawCircle(h.x,h.y,13,marker);
+                marker.setStyle(Paint.Style.FILL);
+            }
             marker.setColor(0x99786b80);
             canvas.drawRoundRect(2,650,86,713,18,18,marker);
             canvas.drawRoundRect(314,650,398,713,18,18,marker);
@@ -217,6 +230,20 @@ public final class ExplorerActivity extends Activity {
                 }
                 if(y>=650 && y<=713 && x>=314){
                     travel(SceneRoutes.right(activeZone));return true;
+                }
+                WorldHotspots.Point found=WorldHotspots.find(activeZone,x,y);
+                if(found!=null){
+                    if("cottage".equals(found.kind) && SceneRoutes.connects(activeZone,"cottage")){
+                        travel("cottage");
+                    }else{
+                        String message=WorldHotspots.interact(ExplorerActivity.this,found);
+                        new AlertDialog.Builder(ExplorerActivity.this)
+                            .setTitle(found.label)
+                            .setMessage(message)
+                            .setPositiveButton("Lovely",null).show();
+                        update();
+                    }
+                    return true;
                 }
                 if(y>225 && y<830){
                     renderer.setDestination(x);
