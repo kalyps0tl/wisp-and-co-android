@@ -16,6 +16,7 @@ The v0.3 explorer/wallpaper foundation includes:
 - Local project progression and some opt-in seasonal interactions: pumpkin carving, tree decorating, Hanukkah-themed candle display (an optional depiction, not religious observance).
 - Manual weather previews and opt-in approximate-location weather fetched from Open-Meteo.
 - **v0.4 context dashboard** showing local time-of-day, battery/charging and battery saver, manual home/away, manual walking/resting, and opt-in Android step-counter hints while the app or live wallpaper is visible.
+- **v0.5 first meeting**: a six-question, first-launch illustrated matching experience with Wayfinder, Tinkerer, Hearthkeeper and Dreamweaver outcomes. Each outcome suggests a distinct spirit form and influences Wisp's activities. The match is optional, fully confirmable, and can be revisited; declining it preserves existing saves.
 - Context gently nudges autonomous activity choices; a user can disable physical-activity sensing without losing gameplay. Battery saver automatically reduces wallpaper and explorer animation frequency.
 - Automatic development debug APK compilation via GitHub Actions.
 
@@ -29,7 +30,7 @@ The v0.3 explorer/wallpaper foundation includes:
 - Respect battery saver, reduced motion, Android accessibility, and device/launcher-specific wallpaper behaviour.
 - User controls over sensing, data deletion, manual context, memory export, and reversible evolution.
 
-See **[ANDROID_PRODUCT_PLAN.md](ANDROID_PRODUCT_PLAN.md)** for the contextual intelligence feature matrix, privacy boundaries, platform compatibility and Play roadmap.
+See **[ANDROID_PRODUCT_PLAN.md](ANDROID_PRODUCT_PLAN.md)** for the contextual intelligence feature matrix, privacy boundaries, platform compatibility and Play roadmap. See **[FEATURE_AUDIT.md](FEATURE_AUDIT.md)** for the verified feature inventory and priorities still needed for the complete game.
 
 ## Download development APKs
 
