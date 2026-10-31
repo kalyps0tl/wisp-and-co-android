@@ -79,7 +79,8 @@ public final class ExplorerActivity extends Activity {
         WispState.advance(this);
         heading.setText("✦ "+names[index()]+"  ·  "+WispState.weather(this));
         caption.setText(WispState.name(this)+" is "+WispState.activity(this)+
-            ".  Tap the ground to walk, or explore nearby.");
+            ".  Your world: "+ContextEngine.dayPart()+", "+ContextEngine.motion(this)+
+            ". Tap the ground to walk, or explore nearby.");
         scene.invalidate();
     }
     private void showActions(){
@@ -140,7 +141,7 @@ public final class ExplorerActivity extends Activity {
                 WorldEvents.selected(ExplorerActivity.this,0)?WorldEvents.progress(ExplorerActivity.this,0):0,
                 WorldEvents.selected(ExplorerActivity.this,1)?WorldEvents.progress(ExplorerActivity.this,1):0,
                 WorldEvents.selected(ExplorerActivity.this,2)?WorldEvents.progress(ExplorerActivity.this,2):0);
-            if(animating && getVisibility()==VISIBLE)postInvalidateDelayed(50);
+            if(animating && getVisibility()==VISIBLE)postInvalidateDelayed(ContextEngine.reducedMotion(ExplorerActivity.this)?110:50);
         }
         @Override public boolean onTouchEvent(MotionEvent event){
             if(event.getAction()==MotionEvent.ACTION_UP){
@@ -157,7 +158,17 @@ public final class ExplorerActivity extends Activity {
             return true;
         }
     }
-    @Override protected void onResume(){super.onResume();animating=true;WeatherClient.refresh(this);update();}
-    @Override protected void onPause(){animating=false;super.onPause();}
+    @Override protected void onResume(){
+        super.onResume();
+        animating=true;
+        ContextEngine.startVisible(this);
+        WeatherClient.refresh(this);
+        update();
+    }
+    @Override protected void onPause(){
+        animating=false;
+        ContextEngine.stopVisible(this);
+        super.onPause();
+    }
     @Override protected void onDestroy(){if(scene!=null)scene.renderer.release();super.onDestroy();}
 }
