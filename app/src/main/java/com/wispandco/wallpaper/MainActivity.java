@@ -145,6 +145,18 @@ public final class MainActivity extends Activity {
               .setPositiveButton("Save",(d,i)->{String n=edit.getText().toString().trim();if(!n.isEmpty())WispState.set(this,"name",n);render();})
               .setNegativeButton("Cancel",null).show();
         });
+        text("VISUAL ATMOSPHERE",18);
+        text("Light: "+WorldVisuals.lighting(this)+" · Palette: "+WorldVisuals.palette(this),13);
+        button("Choose daylight or moonlight",()->new AlertDialog.Builder(this)
+            .setTitle("How does Wisp's sky look?")
+            .setItems(WorldVisuals.LIGHT_LABELS,(d,i)->{
+                WorldVisuals.setLighting(this,i);render();
+            }).setNegativeButton("Cancel",null).show());
+        button("Choose a storybook colour palette",()->new AlertDialog.Builder(this)
+            .setTitle("Colour the little world")
+            .setItems(WorldVisuals.PALETTE_LABELS,(d,i)->{
+                WorldVisuals.setPalette(this,i);render();
+            }).setNegativeButton("Cancel",null).show());
         text("WEATHER, SEASONS & PRIVACY",18);
         button("Save, restore or erase my world",()->
             startActivity(new Intent(this,SaveActivity.class)));
