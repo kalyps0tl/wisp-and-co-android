@@ -78,6 +78,7 @@ public final class MainActivity extends Activity {
         button("Context & senses · your controls",()->
             startActivity(new Intent(this,ContextActivity.class)));
         text("EXPLORE THE LIVING WORLD",18);
+        button("Open the illustrated world atlas",()->startActivity(new Intent(this,WorldAtlasActivity.class)));
         button("Explore Wisp's living world",()->startActivity(new Intent(this,ExplorerActivity.class)));
         button("Visit our woodland neighbors",()->new AlertDialog.Builder(this)
             .setTitle("Friends around the cottage")
