@@ -15,6 +15,7 @@ public final class WorldRenderer {
     private final RectF r=new RectF();
     private float time;
     private String weather;
+    private String lightingMode="auto";
     // Scene geometry is expensive at full phone resolution. Cache the still
     // 600x1350 storybook scenery and animate only Wisp, wildlife and weather.
     private Bitmap sceneCache;
@@ -80,10 +81,11 @@ public final class WorldRenderer {
     }
     private void circle(Canvas c,int color,float x,float y,float rad){p.setColor(color);p.setShader(null);c.drawCircle(x,y,rad,p);}
     public void draw(Canvas c,int w,int h,String zone,String weather,String spirit,long timestamp,
-                     int stage,String trait,int pumpkins,int tree,int candles){
+                     int stage,String trait,int pumpkins,int tree,int candles,
+                     String lighting,String palette){
         if(w<=0||h<=0)return;
-        boolean night=Calendar.getInstance().get(Calendar.HOUR_OF_DAY)>=19
-                || Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<6;
+        lightingMode=lighting;
+        boolean night=WorldVisuals.isNight(lighting);
         cacheScene(zone, weather, night);
         c.save();
         // Preserve proportions on differently shaped Android displays. Slight
@@ -92,6 +94,8 @@ public final class WorldRenderer {
         c.translate((w-400f*scale)/2f,(h-900f*scale)/2f);
         c.scale(scale,scale);
         c.drawBitmap(sceneCache, null, new RectF(0, 0, 400, 900), bitmapPaint);
+        int ambience=WorldVisuals.overlay(palette);
+        if((ambience>>>24)!=0)fill(c,ambience,0,0,400,900);
         time=(timestamp%1000000L)/1000f;
         this.weather=weather;
         if ("pond".equals(zone) || "dock".equals(zone)) movingWater(c);
@@ -353,7 +357,7 @@ public final class WorldRenderer {
     }
     private void wildlife(Canvas c,String zone){
         int hour=Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        boolean night=hour>=19||hour<6;
+        boolean night=WorldVisuals.isNight(lightingMode);
         if("forest".equals(zone)){
             // Alder peers from a branch. Owl eyes open after dusk.
             oval(c,0xff8d7789,285,430,46,63);
@@ -494,7 +498,7 @@ public final class WorldRenderer {
         line(c,0xffab90b5,2,-4,14,4,14);
         // A tiny light accompanies Wisp outdoors in the evening.
         int hour=Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(!"cottage".equals(zone) && (hour>=19 || hour<6)){
+        if(!"cottage".equals(zone) && WorldVisuals.isNight(lightingMode)){
             line(c,0xffaa92aa,2,37,13,45,22);
             oval(c,0x55ffdf9e,35,12,28,28);
             round(c,0xffaa9289,44,21,11,18,3);
