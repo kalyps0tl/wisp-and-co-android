@@ -12,6 +12,7 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_wisp_info"/>
         </receiver>
+        <activity android:name=".GardenActivity" android:exported="false" />
         <activity android:name=".WorldAtlasActivity" android:exported="false" />
         <activity android:name=".SaveActivity" android:exported="false" />
         <activity android:name=".MatchingActivity" android:exported="false" />
