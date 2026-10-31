@@ -30,7 +30,11 @@ public final class WispBackup {
         "event_pumpkins","event_christmas","event_hanukkah",
         "pumpkin_progress","tree_progress","hanukkah_progress","seasonal_idle_ticks",
         "sensor_enabled","place_mode","motion_override","reduce_motion",
-        "quiet_evenings","neighbor_0_bond","neighbor_1_bond","neighbor_2_bond",
+        "quiet_evenings",
+        "moment_pending","moment_last_offered","moment_last_answer",
+        "moment_invites","moment_snoozed",
+        "affinity_curiosity","affinity_making","affinity_kindness",
+        "neighbor_0_bond","neighbor_1_bond","neighbor_2_bond",
         "neighbor_3_bond","neighbor_0_seen","neighbor_1_seen","neighbor_2_seen",
         "neighbor_3_seen","neighbor_0_last","neighbor_1_last","neighbor_2_last",
         "neighbor_3_last","neighbor_0_gift","neighbor_1_gift","neighbor_2_gift",
@@ -120,6 +124,9 @@ public final class WispBackup {
         }
         // Never import transient walking evidence. It may be stale from another device.
         editor.remove("last_walk").remove("weatherUpdated").remove("tempC");
+        // Importing a save never grants sensor permission or enables motion
+        // sensing on the destination phone. Opt-in again in Context & senses.
+        editor.putBoolean("sensor_enabled",false);
         if(!editor.commit())throw new IllegalStateException("Could not save the imported data.");
         ContextEngine.refresh(c);
         return restored;
